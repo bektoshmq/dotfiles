@@ -44,6 +44,8 @@ return {
         ["@property"] = { fg = "text" },
         ["@lsp.type.property"] = { fg = "text" },
         ["@variable.member"] = { fg = "text" },
+        ["@type.builtin"] = { bold = false },
+        ["@function.builtin"] = { bold = false },
       },
     },
   },
