@@ -6,6 +6,9 @@ return {
     scroll = { enabled = false },
     picker = {
       sources = {
+        files = {
+          hidden = true,
+        },
         explorer = {
           hidden = true, -- show hidden files by default
           layout = {
@@ -13,7 +16,6 @@ return {
               position = "right",
               width = 0.5,
               min_width = 30,
-              max_width = 60,
             },
           },
         },
