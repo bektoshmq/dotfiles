@@ -4,6 +4,7 @@ return {
     indent = { enabled = false },
     words = { enabled = false },
     scroll = { enabled = false },
+    image = { enabled = true },
     picker = {
       sources = {
         files = {

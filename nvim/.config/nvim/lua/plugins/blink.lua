@@ -5,5 +5,10 @@ return {
       ["<C-j>"] = { "select_next", "fallback" },
       ["<C-k>"] = { "select_prev", "fallback" },
     },
+    cmdline = {
+      keymap = {
+        preset = "inherit",
+      },
+    },
   },
 }
