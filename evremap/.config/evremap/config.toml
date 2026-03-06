@@ -1,0 +1,75 @@
+# ~/.config/evremap/config.toml
+
+device_name = "AT Translated Set 2 keyboard"
+
+# Caps Lock <-> Esc swap
+[[remap]]
+input = ["KEY_CAPSLOCK"]
+output = ["KEY_ESC"]
+
+[[remap]]
+input = ["KEY_ESC"]
+output = ["KEY_CAPSLOCK"]
+
+# Tab <-> Left Ctrl swap
+[[remap]]
+input = ["KEY_TAB"]
+output = ["KEY_LEFTCTRL"]
+
+[[remap]]
+input = ["KEY_LEFTCTRL"]
+output = ["KEY_TAB"]
+
+# Shift+3: produce #
+[[remap]]
+input = ["KEY_LEFTSHIFT", "KEY_3"]
+output = ["KEY_BACKSLASH"]
+
+[[remap]]
+input = ["KEY_RIGHTSHIFT", "KEY_3"]
+output = ["KEY_BACKSLASH"]
+
+# Shift+grave: produce ~
+[[remap]]
+input = ["KEY_LEFTSHIFT", "KEY_GRAVE"]
+output = ["KEY_LEFTSHIFT", "KEY_BACKSLASH"]
+
+[[remap]]
+input = ["KEY_RIGHTSHIFT", "KEY_GRAVE"]
+output = ["KEY_RIGHTSHIFT", "KEY_BACKSLASH"]
+
+# # ~ key (above Enter) -> Right Ctrl
+[[remap]]
+input = ["KEY_BACKSLASH"]
+output = ["KEY_RIGHTCTRL"]
+
+[[remap]]
+input = ["KEY_LEFTSHIFT", "KEY_BACKSLASH"]
+output = ["KEY_RIGHTCTRL"]
+
+[[remap]]
+input = ["KEY_RIGHTSHIFT", "KEY_BACKSLASH"]
+output = ["KEY_RIGHTCTRL"]
+
+# Right Ctrl -> Super
+[[remap]]
+input = ["KEY_RIGHTCTRL"]
+output = ["KEY_LEFTMETA"]
+
+# Shift+2: " -> @
+[[remap]]
+input = ["KEY_LEFTSHIFT", "KEY_2"]
+output = ["KEY_LEFTSHIFT", "KEY_APOSTROPHE"]
+
+[[remap]]
+input = ["KEY_RIGHTSHIFT", "KEY_2"]
+output = ["KEY_RIGHTSHIFT", "KEY_APOSTROPHE"]
+
+# Shift+': @ -> "
+[[remap]]
+input = ["KEY_LEFTSHIFT", "KEY_APOSTROPHE"]
+output = ["KEY_LEFTSHIFT", "KEY_2"]
+
+[[remap]]
+input = ["KEY_RIGHTSHIFT", "KEY_APOSTROPHE"]
+output = ["KEY_RIGHTSHIFT", "KEY_2"]
