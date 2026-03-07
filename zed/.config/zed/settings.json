@@ -85,9 +85,6 @@
   "terminal": {
     "dock": "bottom",
     "default_height": 500,
-    "shell": {
-      "program": "fish",
-    },
   },
   "experimental.theme_overrides": {
     "background": "#000000",

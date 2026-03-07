@@ -1,1 +1,1 @@
-alias la = ls -a
+# Moved into config.nu.

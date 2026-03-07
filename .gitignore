@@ -2,3 +2,4 @@
 fish_variables
 tmux/.config/tmux/plugins
 lazy-lock.json
+nushell/.config/nushell/vendor/
