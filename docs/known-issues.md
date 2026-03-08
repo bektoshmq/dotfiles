@@ -44,7 +44,7 @@ Symptoms:
 - This can surface in Zed as `Failed to load environment variables`.
 - Running Nushell with explicit config flags works:
   ```powershell
-  nu --config "D:\dotfiles\nushell\.config\nushell\config.nu" --env-config "D:\dotfiles\nushell\.config\nushell\env.nu"
+  nu --config "D:\dotfiles\nushell\config.nu" --env-config "D:\dotfiles\nushell\env.nu"
   ```
 
 Cause:
@@ -60,7 +60,7 @@ Repro:
   ```
 - Works:
   ```powershell
-  nu --config "D:\dotfiles\nushell\.config\nushell\config.nu" --env-config "D:\dotfiles\nushell\.config\nushell\env.nu"
+  nu --config "D:\dotfiles\nushell\config.nu" --env-config "D:\dotfiles\nushell\env.nu"
   ```
 
 What was ruled out:
@@ -80,3 +80,4 @@ Notes:
 
 References:
 - [Nushell issue #15466](https://github.com/nushell/nushell/issues/15466)
+

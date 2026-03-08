@@ -1,0 +1,1 @@
+# Intentionally unused in this repo-local config. Active Starship integration lives in autoload/starship.nu.

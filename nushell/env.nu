@@ -19,7 +19,12 @@ if not (which mise | is-empty) {
 }
 
 if $nu.os-info.name == 'windows' {
-  $env.BAT_CONFIG_DIR = "D:\\dotfiles\\bat\\.config\\bat"
+  $env.XDG_CONFIG_HOME = 'D:\dotfiles'
+  $env.BAT_CONFIG_DIR = 'D:\dotfiles\bat'
+  let winlibs_bin = (
+    $env.LOCALAPPDATA
+    | path join "Microsoft" "WinGet" "Packages" "BrechtSanders.WinLibs.POSIX.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe" "mingw64" "bin"
+  )
 
   let dev_cache = "D:\\.cache"
   let dev_state = "D:\\.state"
@@ -80,6 +85,9 @@ if $nu.os-info.name == 'windows' {
   $env.NPM_CONFIG_CACHE = $npm_cache
   $env.npm_config_cache = $npm_cache
 
+  if ($winlibs_bin | path exists) {
+    path add $winlibs_bin
+  }
   path add ($go_root | path join "bin")
   path add ($bun_root | path join "bin")
   path add ($cargo_root | path join "bin")
@@ -95,3 +103,5 @@ if $nu.os-info.name != 'windows' {
   path add ~/.bun/bin
   path add ~/.orbstack/bin
 }
+
+

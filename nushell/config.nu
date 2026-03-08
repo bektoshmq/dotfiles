@@ -27,6 +27,34 @@ source vendor/autoload/zoxide.nu
 # Mise
 use vendor/autoload/mise.nu
 
+if $nu.os-info.name == 'windows' {
+  # TODO: Work around WinLibs/gcc disappearing from PATH after Nushell startup.
+  # This is likely papering over PATH propagation or mise hook behavior, not the clean root fix.
+  let winlibs_bin = (
+    $env.LOCALAPPDATA
+    | path join "Microsoft" "WinGet" "Packages" "BrechtSanders.WinLibs.POSIX.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe" "mingw64" "bin"
+  )
+
+  def --env ensure_winlibs_path [bin: string] {
+    if (($bin | path exists) and ($env.PATH | where {|p| $p == $bin } | is-empty)) {
+      $env.PATH = ($env.PATH | prepend $bin)
+    }
+  }
+
+  ensure_winlibs_path $winlibs_bin
+
+  let winlibs_hook = {
+    condition: { $nu.os-info.name == 'windows' }
+    code: { ensure_winlibs_path $winlibs_bin }
+  }
+
+  $env.config = (
+    $env.config
+    | upsert hooks.pre_prompt (($env.config.hooks.pre_prompt? | default []) ++ [$winlibs_hook])
+    | upsert hooks.env_change.PWD (($env.config.hooks.env_change.PWD? | default []) ++ [$winlibs_hook])
+  )
+}
+
 # Aliases
 alias cat = bat
 
