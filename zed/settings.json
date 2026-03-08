@@ -85,6 +85,9 @@
   "terminal": {
     "dock": "bottom",
     "default_height": 500,
+    "shell": {
+      "program": "nu"
+    }
   },
   "experimental.theme_overrides": {
     "background": "#000000",

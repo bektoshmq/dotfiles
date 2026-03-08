@@ -352,13 +352,7 @@ wezterm.on('update-right-status', function(window, _)
   })
 end)
 
-config.default_prog = {
-  'nu.exe',
-  '--config',
-  [[D:\dotfiles\nushell\config.nu]],
-  '--env-config',
-  [[D:\dotfiles\nushell\env.nu]],
-}
+config.default_prog = { 'nu.exe' }
 config.default_cwd = [[D:\]]
 config.default_domain = MUX_DOMAIN
 config.unix_domains = {
