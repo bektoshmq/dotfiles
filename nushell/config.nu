@@ -26,6 +26,30 @@ source vendor/autoload/zoxide.nu
 
 # Mise
 use vendor/autoload/mise.nu
+let mise_bin = ($env.LOCALAPPDATA | path join "Microsoft" "WinGet" "Links" "mise.exe")
+
+# `mise activate nu` installs hooks, but those only refresh the env on prompt/PWD changes.
+# Apply the current mise env once at startup so tools are available immediately, including in `nu -c`.
+def --env apply_mise_env_once [] {
+  if not ($mise_bin | path exists) {
+    return
+  }
+
+  let vars = (^$mise_bin env -s nu | from csv --noheaders --no-infer | rename op name value)
+  for $var in $vars {
+    if $var.op == "set" {
+      if (($var.name | str upcase) == "PATH") {
+        $env.PATH = ($var.value | split row (char esep))
+      } else {
+        load-env {($var.name): $var.value}
+      }
+    } else if $var.op == "hide" and $var.name in $env {
+      hide-env $var.name
+    }
+  }
+}
+
+apply_mise_env_once
 
 if $nu.os-info.name == 'windows' {
   # TODO: Work around WinLibs/gcc disappearing from PATH after Nushell startup.

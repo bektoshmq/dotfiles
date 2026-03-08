@@ -17,11 +17,7 @@ def --env "update-env" [] {
 }
 export-env {
   
-  'hide,RUSTUP_TOOLCHAIN,
-set,PATH,C:\Users\bekto\AppData\Local\Microsoft\WinGet\Packages\BrechtSanders.WinLibs.POSIX.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\mingw64\bin;D:\.bun\bin;D:\go\bin;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\WINDOWS\System32\OpenSSH\;C:\Program Files\PowerShell\7\;C:\Program Files\WezTerm;C:\Program Files\Git\cmd;C:\Program Files\nu\bin\;C:\Program Files\Neovim\bin;C:\Program Files\starship\bin\;C:\Program Files (x86)\Windows Kits\10\Windows Performance Toolkit\;C:\Users\bekto\AppData\Local\Microsoft\WindowsApps;C:\Users\bekto\AppData\Local\Voidstar\FilePilot;C:\Users\bekto\AppData\Local\PowerToys\DSCModules\;C:\Users\bekto\AppData\Local\Programs\Zed\bin;C:\Users\bekto\AppData\Local\Microsoft\WinGet\Links;
-hide,MISE_SHELL,
-hide,__MISE_DIFF,
-hide,__MISE_DIFF,' | parse vars | update-env
+  '' | parse vars | update-env
   $env.MISE_SHELL = "nu"
   let mise_hook = {
     condition: { "MISE_SHELL" in $env }
