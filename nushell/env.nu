@@ -97,4 +97,3 @@ if $nu.os-info.name != 'windows' {
   path add ~/.orbstack/bin
 }
 
-
