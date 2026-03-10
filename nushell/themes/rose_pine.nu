@@ -56,9 +56,9 @@ export def main [] {
         shape_directory: '#9ccfd8'
         shape_external: { fg: $command_color attr: 'b' }
         shape_external_resolved: { fg: $command_color attr: 'b' }
-        shape_externalarg: { fg: '#ebbcba' attr: 'b' }
+        shape_externalarg: '#ebbcba'
         shape_filepath: '#9ccfd8'
-        shape_flag: { fg: '#31748f' attr: 'b' }
+        shape_flag: '#31748f'
         shape_float: { fg: '#eb6f92' attr: 'b' }
         shape_garbage: { fg: '#e0def4' bg: '#eb6f92' attr: 'b' }
         shape_glob_interpolation: { fg: '#9ccfd8' attr: 'b' }
@@ -127,4 +127,3 @@ export module activate {
 }
 
 use activate
-

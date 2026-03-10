@@ -156,10 +156,17 @@ $env.config.keybindings ++= [
     }
   }
   {
+    name: "unbind_ctrl_j_enter"
+    modifier: "control"
+    keycode: "char_j"
+    mode: ["emacs" "vi_insert"]
+    event: null
+  }
+  {
     name: "menu_down_ctrl_j"
     modifier: "control"
     keycode: "char_j"
-    mode: "vi_insert"
+    mode: ["emacs" "vi_insert"]
     event: {
       until: [
         { send: menudown }
@@ -186,4 +193,5 @@ source themes/rose_pine.nu
 
 # Completions
 source completions/git.nu
+source completions/go.nu
 source completions/zellij.nu

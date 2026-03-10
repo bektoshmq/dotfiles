@@ -555,6 +555,10 @@ export extern "git branch" [
 ]
 
 # List all variables set in config file, along with their values.
+export extern "git config" [
+]
+
+# List all variables set in config file, along with their values.
 export extern "git config list" [
 ]
 
@@ -708,6 +712,10 @@ export extern "git status" [
 ]
 
 # Stash changes for later
+export extern "git stash" [
+]
+
+# Stash changes for later
 export extern "git stash push" [
   --patch(-p)                                         # interactively choose hunks to stash
 ]
@@ -749,6 +757,10 @@ export extern "git prune" [
   --expire: string                                    # expire objects older than
   --progress                                          # show progress
   --verbose(-v)                                       # report all removed objects
+]
+
+# Start a binary search to find the commit that introduced a bug
+export extern "git bisect" [
 ]
 
 # Start a binary search to find the commit that introduced a bug
