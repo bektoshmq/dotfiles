@@ -55,6 +55,7 @@ $pathEntries = @(
   (Join-Path $env:LOCALAPPDATA "Microsoft\WinGet\Links"),
   "C:\Program Files\LLVM\bin",
   $winlibsBin,
+  "D:\clones\Odin",
   "D:\.cargo\bin",
   "D:\go\bin",
   "D:\.bun\bin"

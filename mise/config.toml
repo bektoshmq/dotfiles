@@ -2,6 +2,8 @@
 bun = "latest"
 go = "latest"
 node = "latest"
+python = "latest"
 # rust = "latest"
 # Managed outside mise so Cargo/rustup data and build-heavy Rust artifacts can live on D:\ explicitly.
 usage = "latest"
+uv = "latest"
