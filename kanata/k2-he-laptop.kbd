@@ -1,0 +1,45 @@
+;; Keychron K2 HE inspired laptop remap for Kanata on Windows.
+;; Mirrors the core QMK behavior:
+;; - Tab: tap Tab, hold Left Ctrl
+;; - Caps: Esc on base, Caps Lock on fn layer
+;; - Left Ctrl: momentary fn layer
+;; - Right Ctrl: Right Meta / Windows key
+;; - Backslash: tap Backslash, hold Right Ctrl
+;; - Space: Space normally, Shift while either Ctrl mod-tap is active
+
+(defcfg
+  process-unmapped-keys yes
+  concurrent-tap-hold yes
+  tooltip-layer-changes yes
+)
+
+(defsrc
+  grv  1    2    3    4    5    6    7    8    9    0    -    =    bspc
+  tab  q    w    e    r    t    y    u    i    o    p    [    ]    \
+  caps a    s    d    f    g    h    j    k    l    ;    '    ret
+  lsft z    x    c    v    b    n    m    ,    .    /    rsft
+  lctl lmet lalt           spc            ralt rmet rctl
+)
+
+(defalias
+  ;; tap-hold-press makes Ctrl shortcuts usable without waiting the full timeout
+  ;; when the next key is pressed quickly after Tab or Backslash.
+  lctl-tab   (tap-hold-press 200 200 tab lctl)
+  rctl-bksl  (tap-hold-press 200 200 \ rctl)
+  fn         (layer-while-held fn)
+  spc-or-sft (fork spc lsft (lctl rctl))
+)
+
+(deflayermap (base)
+  _    use-defsrc
+  tab  @lctl-tab
+  caps esc
+  \    @rctl-bksl
+  lctl @fn
+  spc  @spc-or-sft
+  rctl rmet
+)
+
+(deflayermap (fn)
+  caps caps
+)

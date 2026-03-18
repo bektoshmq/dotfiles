@@ -6,6 +6,14 @@ return {
     scroll = { enabled = false },
     image = { enabled = true },
     picker = {
+      layout = {
+        preset = function()
+          if vim.g.neovide then
+            return "ivy_split"
+          end
+          return vim.o.columns >= 120 and "default" or "vertical"
+        end,
+      },
       sources = {
         files = {
           hidden = true,
