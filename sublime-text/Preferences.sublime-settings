@@ -1,0 +1,33 @@
+{
+	"font_face": "JetBrainsMono Nerd Font",
+	"font_size": 16,
+	"font_options": ["no_italic"],
+
+	"tab_size": 4,
+	"translate_tabs_to_spaces": true,
+	"detect_indentation": false,
+
+	"word_wrap": false,
+	"draw_indent_guides": false,
+
+	"relative_line_numbers": true,
+	"highlight_line": true,
+
+	"scroll_past_end": true,
+
+	"save_on_focus_lost": true,
+
+	"find_case_sensitive": false,
+	"color_scheme": "Rosé Pine.sublime-color-scheme",
+
+	"scroll_speed": 5.0,
+	"theme": "Rosé Pine.sublime-theme",
+	"ignored_packages":
+	[
+		"Rust",
+		"Vintage",
+	],
+	"index_files": true,
+	"vintageous_exit_when_quitting_last_window": false,
+	"sidebar_on_right": true,
+}

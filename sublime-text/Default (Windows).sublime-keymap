@@ -1,0 +1,10 @@
+[
+	{ "keys": ["ctrl+f"], "command": "show_panel", "args": {"panel": "find", "reverse": false} },
+	{ "keys": ["ctrl+b"], "command": "build" },
+	{ "keys": ["alt+s"], "command": "prompt_select_workspace" },
+	{ "keys": ["alt+shift+p"], "command": "prompt_select_workspace" },
+	{ "keys": ["ctrl+shift+n"], "command": "new_window" },
+	{ "keys": ["ctrl+shift+w"], "command": "close_window" },
+	{ "keys": ["escape"], "command": "focus_group", "args": {"group": 0}, "context": [{"key": "control", "operand": "sidebar_tree"}] },
+	{ "keys": ["alt+e"], "command": "toggle_sidebar_focus" },
+]

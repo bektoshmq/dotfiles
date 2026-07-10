@@ -51,12 +51,15 @@ $userEnv = [ordered]@{
 }
 
 $winlibsBin = Join-Path $env:LOCALAPPDATA "Microsoft\WinGet\Packages\BrechtSanders.WinLibs.POSIX.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\mingw64\bin"
+$vsLlvmBin = "C:\Program Files\Microsoft Visual Studio\18\Community\VC\Tools\Llvm\x64\bin"
 $pathEntries = @(
   (Join-Path $env:LOCALAPPDATA "Microsoft\WinGet\Links"),
   "C:\Program Files\LLVM\bin",
   $winlibsBin,
+  $vsLlvmBin,
   "D:\clones\Odin",
   "D:\.cargo\bin",
+  (Join-Path $env:USERPROFILE ".cargo\bin"),
   "D:\go\bin",
   "D:\.bun\bin"
 )

@@ -1,0 +1,18 @@
+let mapleader=<space>
+nnoremap gd :LspSymbolDefinition side_by_side=false force_group=true fallback=true group=-1<CR>
+nnoremap gr :LspSymbolReferences side_by_side=false force_group=true fallback=false group=-1 include_declaration=false<CR>
+nnoremap gI :LspSymbolImplementation side_by_side=false force_group=true group=-1<CR>
+nnoremap gy :LspSymbolTypeDefinition side_by_side=false force_group=true group=-1<CR>
+nnoremap gD :LspSymbolDeclaration side_by_side=false force_group=true group=-1<CR>
+nnoremap K :LspHover<CR>
+nnoremap gK :LspSignatureHelpShow<CR>
+nnoremap <Leader>ca :LspCodeActions<CR>
+nnoremap <Leader>cr :LspSymbolRename<CR>
+nnoremap <Leader>cf :LspFormatDocument<CR>
+nnoremap ]d :LspNextDiagnostic<CR>
+nnoremap [d :LspPrevDiagnostic<CR>
+nnoremap ]e :LspNextDiagnostic<CR>
+nnoremap [e :LspPrevDiagnostic<CR>
+xnoremap <Leader>ca :LspCodeActions<CR>
+nnoremap <Leader>ss :LspDocumentSymbols<CR>
+nnoremap <Leader>sS :LspWorkspaceSymbols<CR>

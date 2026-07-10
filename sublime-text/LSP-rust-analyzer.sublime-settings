@@ -1,0 +1,6 @@
+{
+	"command": ["rust-analyzer"],
+	"scopes": ["source.rust"],
+	"syntaxes": ["Packages/Rust/Rust.sublime-syntax"],
+	"languages": ["Rust"],
+}

@@ -1,0 +1,6 @@
+{
+	"command": ["clangd", "--header-insertion=never"],
+	"scopes": ["source.c", "source.c++"],
+	"syntaxes": ["Packages/C++/C.sublime-syntax", "Packages/C++/C++.sublime-syntax"],
+	"languages": ["C", "C++"],
+}
