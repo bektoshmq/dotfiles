@@ -43,7 +43,6 @@ return {
       "sql",
       "templ",
       "terraform",
-      "tmux",
       "zig",
     },
   },

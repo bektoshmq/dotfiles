@@ -1,0 +1,52 @@
+# If not running interactively, don't do anything (leave this at the top of this file)
+[[ $- != *i* ]] && return
+
+# Load Omarchy's defaults first, then layer personal settings below.
+source ~/.local/share/omarchy/default/bash/rc
+
+# Prefer user-installed command-line tools over same-named system launchers.
+export PATH="$HOME/.local/bin:$PATH"
+
+# Completions for gh and the Mise-installed Go toolchain.
+source ~/.config/bash/dev-completions.bash
+
+# Use Readline's vi editing mode without a visible mode indicator.
+set -o vi
+bind 'set show-mode-in-prompt on'
+bind 'set vi-ins-mode-string \1\e[1 q\2'
+bind 'set vi-cmd-mode-string \1\e[2 q\2'
+bind -m vi-insert '"\C-p": previous-history'
+bind -m vi-insert '"\C-n": next-history'
+
+sesh-launcher() {
+  local selected
+  selected="$(
+    sesh list --icons | fzf \
+      --no-sort --ansi --border-label ' sesh ' --prompt '⚡  ' \
+      --header '  ^a all ^t tmux ^g configs ^x zoxide ^d tmux kill ^f find' \
+      --bind 'tab:down,btab:up' \
+      --bind 'ctrl-a:change-prompt(⚡  )+reload(sesh list --icons)' \
+      --bind 'ctrl-t:change-prompt(🪟  )+reload(sesh list -t --icons)' \
+      --bind 'ctrl-g:change-prompt(⚙️  )+reload(sesh list -c --icons)' \
+      --bind 'ctrl-x:change-prompt(📁  )+reload(sesh list -z --icons)' \
+      --bind 'ctrl-f:change-prompt(🔎  )+reload(fd -H -d 2 -t d -E .Trash . ~)' \
+      --bind 'ctrl-d:execute(tmux kill-session -t {2..})+change-prompt(⚡  )+reload(sesh list --icons)' \
+      --preview-window 'right:55%' \
+      --preview 'sesh preview {}'
+  )" || return
+
+  [[ -n $selected ]] && sesh connect "$selected"
+}
+
+if declare -F fzf-file-widget &>/dev/null; then
+  for keymap in emacs-standard vi-insert vi-command; do
+    bind -m "$keymap" -r '\C-t'
+    bind -m "$keymap" -x '"\C-f": fzf-file-widget'
+    bind -m "$keymap" -x '"\C-t": sesh-launcher'
+  done
+  unset keymap
+fi
+
+if command -v bat &>/dev/null; then
+  alias cat='bat'
+fi
