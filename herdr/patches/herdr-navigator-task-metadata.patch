@@ -1,0 +1,64 @@
+diff --git i/src/sources.rs w/src/sources.rs
+index 679f2a3..394fd19 100644
+--- i/src/sources.rs
++++ w/src/sources.rs
+@@ -157,12 +157,25 @@ fn agents_from_json(
+                 .unwrap_or(workspace_id);
+             let path = PathBuf::from(cwd);
+             let dir = basename(&path);
++            let task = p
++                .pointer("/tokens/task")
++                .and_then(|v| v.as_str())
++                .filter(|value| !value.is_empty());
++            let metadata_title = p
++                .get("title")
++                .and_then(|v| v.as_str())
++                .filter(|value| !value.is_empty());
++            let display_agent = p
++                .get("display_agent")
++                .and_then(|v| v.as_str())
++                .filter(|value| !value.is_empty());
+             let alias_terms: Vec<String> = aliases
+                 .iter()
+                 .filter(|alias| alias.matches(agent, workspace_label, cwd))
+                 .map(|alias| alias.alias.clone())
+                 .collect();
+-            let title = format!("{agent} · {workspace_label} · {dir}");
++            let display_name = task.or(metadata_title).or(display_agent).unwrap_or(agent);
++            let title = format!("{display_name} · {workspace_label} · {dir}");
+             let subtitle = format!("{status} · {pane} · {tab}");
+             let mut search_terms = vec![
+                 agent.into(),
+@@ -176,6 +189,11 @@ fn agents_from_json(
+                 basename(&PathBuf::from(foreground_cwd)),
+                 foreground_cwd.into(),
+             ];
++            for value in [task, metadata_title, display_agent].into_iter().flatten() {
++                if !search_terms.iter().any(|term| term == value) {
++                    search_terms.push(value.into());
++                }
++            }
+             if let Some(session) = p.pointer("/agent_session/value").and_then(|v| v.as_str()) {
+                 search_terms.push(session.into());
+             }
+@@ -334,4 +352,20 @@ mod tests {
+         assert_eq!(agents[0].agent_target.as_deref(), Some("w43:p1"));
+         assert!(agents[0].search_terms.contains(&"58f4-session".to_string()));
+         assert!(agents[0].subtitle.starts_with("working"));
++
++        let titled_agent_json = serde_json::json!({"id":"cli:agent:list","result":{"type":"agent_list","agents":[
++            {"agent":"codex","agent_status":"idle","cwd":"/tmp","display_agent":"Codex: setup",
++             "foreground_cwd":"/tmp","pane_id":"w43:p2","tab_id":"w43:t2","title":"Herdr Setup",
++             "tokens":{"task":"herdr-setup"},"workspace_id":"w43"}]}});
++        let titled_agents = agents_from_json(&titled_agent_json, &entries, &[]);
++        assert_eq!(titled_agents[0].title, "herdr-setup · dir: picker · tmp");
++        assert!(titled_agents[0]
++            .search_terms
++            .contains(&"herdr-setup".to_string()));
++        assert!(titled_agents[0]
++            .search_terms
++            .contains(&"Herdr Setup".to_string()));
++        assert!(titled_agents[0]
++            .search_terms
++            .contains(&"Codex: setup".to_string()));
+     }

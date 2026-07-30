@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+script_dir="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
+patch_file="$script_dir/patches/herdr-navigator-task-metadata.patch"
+plugin_root="$(
+  herdr plugin list --json |
+    jq -er '.result.plugins[] | select(.plugin_id == "herdr-navigator") | .plugin_root'
+)"
+
+if git -C "$plugin_root" apply --reverse --check "$patch_file" 2>/dev/null; then
+  echo "herdr-navigator task-metadata patch is already applied"
+elif git -C "$plugin_root" apply --check "$patch_file"; then
+  git -C "$plugin_root" apply "$patch_file"
+else
+  echo "herdr-navigator source does not match the supported patch" >&2
+  exit 1
+fi
+
+cargo test --manifest-path "$plugin_root/Cargo.toml"
+cargo build --release --manifest-path "$plugin_root/Cargo.toml"
