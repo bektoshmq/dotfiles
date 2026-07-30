@@ -7,7 +7,7 @@ Omarchy-specific behavior kept here includes:
 
 - desktop-wide theme selection and live theme reloads;
 - transparent highlight handling;
-- local Wayland clipboard integration;
+- local Wayland plus remote OSC 52 clipboard support;
 - Omarchy's stock theme plugins and disabled news notifications.
 
 `lua/plugins/theme.lua` intentionally points at Omarchy's current theme. Keep
