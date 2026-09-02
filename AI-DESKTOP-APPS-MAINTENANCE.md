@@ -161,13 +161,13 @@ Launch the application and confirm that the older version works. Leave the timer
 
 ## Troubleshooting
 
-### An application is missing from Walker
+### An application is missing from the application menu
 
-Refresh the desktop database and Walker:
+Refresh the desktop database. Quattro's application menu watches desktop
+entries automatically, so it does not need a manual restart:
 
 ```bash
 update-desktop-database ~/.local/share/applications
-omarchy restart walker
 ```
 
 Confirm that the desktop entries exist:

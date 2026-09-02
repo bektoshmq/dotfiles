@@ -90,13 +90,20 @@
     }
   },
   "experimental.theme_overrides": {
-    "background": "#000000",
-    "editor.background": "#000000",
-    "toolbar.background": "#000000",
-    "status_bar.background": "#000000",
-    "title_bar.background": "#000000",
-    "panel.background": "#000000",
-    "terminal.background": "#000000",
+    "background.appearance": "transparent",
+    "background": "#0c0b0cd1",
+    "surface.background": "#0c0b0cd1",
+    "editor.background": "#0c0b0cd1",
+    "editor.gutter.background": "#0c0b0cd1",
+    "toolbar.background": "#0c0b0cd1",
+    "status_bar.background": "#0c0b0cd1",
+    "title_bar.background": "#0c0b0cd1",
+    "title_bar.inactive_background": "#0c0b0cd1",
+    "tab_bar.background": "#0c0b0cd1",
+    "tab.active_background": "#0c0b0cd1",
+    "tab.inactive_background": "#0c0b0cd1",
+    "panel.background": "#0c0b0cd1",
+    "terminal.background": "#0c0b0cd1",
   },
   "languages": {
     "C": {
