@@ -1,5 +1,7 @@
 [tools]
 bun = "latest"
+codex = "latest"
+gh = "latest"
 go = "latest"
 node = "latest"
 python = "latest"
