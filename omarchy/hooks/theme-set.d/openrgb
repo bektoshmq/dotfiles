@@ -1,0 +1,72 @@
+#!/bin/bash
+
+# Match supported OpenRGB devices to the current Omarchy accent color.
+# Omarchy generates keyboard.rgb from colors.toml for every theme.
+color_file="$HOME/.local/state/omarchy/current/theme/keyboard.rgb"
+save_devices=true
+
+if [[ ${1:-} == "--no-keychron-save" || ${1:-} == "--no-device-save" ]]; then
+  save_devices=false
+fi
+
+[[ -r "$color_file" ]] || exit 0
+
+color=$(LC_ALL=C tr -d '#[:space:]' <"$color_file")
+if [[ ! $color =~ ^[0-9A-Fa-f]{6}$ ]]; then
+  logger -t omarchy-openrgb-sync "Ignored invalid theme color: $color"
+  exit 0
+fi
+
+# The lock prevents overlapping scans when hooks fire close together.
+runtime_dir="${XDG_RUNTIME_DIR:-/tmp}"
+(
+  flock -n 9 || exit 0
+
+  if ! devices=$(/usr/bin/openrgb --noautoconnect --list-devices 2>&1); then
+    logger -t omarchy-openrgb-sync "Could not scan OpenRGB devices: $devices"
+    exit 1
+  fi
+
+  openrgb_args=(--noautoconnect)
+  device_count=0
+  msi_present=false
+  keychron_present=false
+
+  if grep -Fq "MSI MAG B650 TOMAHAWK WIFI" <<<"$devices"; then
+    openrgb_args+=(--device "MSI MAG B650 TOMAHAWK WIFI" --mode Static --color "$color")
+    ((device_count += 1))
+    msi_present=true
+  fi
+
+  if grep -Fq "Keychron K2 HE" <<<"$devices"; then
+    openrgb_args+=(--device "Keychron K2 HE" --mode "Solid Color" --color "$color")
+    ((device_count += 1))
+    keychron_present=true
+  fi
+
+  if ((device_count == 0)); then
+    logger -t omarchy-openrgb-sync "No supported OpenRGB controllers are available"
+    exit 0
+  fi
+
+  if output=$(/usr/bin/openrgb "${openrgb_args[@]}" 2>&1); then
+    logger -t omarchy-openrgb-sync "Applied #$color to $device_count controller(s)"
+
+    # Both Static modes are manual-save. Commit them only on theme changes;
+    # the post-boot hook intentionally requests no device writes.
+    if $msi_present && $save_devices; then
+      if output=$("$HOME/.local/bin/omarchy-msi-rgb-save" 2>&1); then
+        logger -t omarchy-openrgb-sync "Saved #$color to the MSI motherboard"
+      else
+        logger -t omarchy-openrgb-sync "Applied #$color but failed to save it to the MSI motherboard: $output"
+      fi
+    fi
+
+    if $keychron_present && $save_devices && ! "$HOME/.local/bin/omarchy-keychron-rgb-save"; then
+      logger -t omarchy-openrgb-sync "Applied #$color but failed to save it to the Keychron K2 HE"
+    fi
+  else
+    logger -t omarchy-openrgb-sync "Failed to apply Omarchy color #$color: $output"
+    exit 1
+  fi
+) 9>"$runtime_dir/omarchy-openrgb-sync.lock"
