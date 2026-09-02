@@ -1,0 +1,709 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>Neovim → Cursor keybinding comparison</title>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --surface: #151b23;
+      --surface-2: #1b2330;
+      --border: #2b3545;
+      --text: #e6edf3;
+      --muted: #93a4b8;
+      --accent: #7aa2f7;
+      --accent-soft: #1d3158;
+      --current: #6ee7b7;
+      --native: #67e8f9;
+      --exact: #a7f3d0;
+      --approx: #fde68a;
+      --extension: #c4b5fd;
+      --conflict: #fca5a5;
+      --none: #a8b3c4;
+      --shadow: 0 16px 44px rgb(0 0 0 / 28%);
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      background:
+        radial-gradient(circle at 15% -10%, rgb(71 99 165 / 22%), transparent 33rem),
+        radial-gradient(circle at 90% 5%, rgb(50 125 112 / 13%), transparent 30rem),
+        var(--bg);
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.55;
+    }
+
+    button, input, select { font: inherit; }
+
+    a { color: #9bbcff; }
+    a:hover { color: #c3d4ff; }
+
+    .shell {
+      width: min(1480px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 52px 0 72px;
+    }
+
+    .eyebrow {
+      color: var(--accent);
+      font-size: 0.76rem;
+      font-weight: 800;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      max-width: 920px;
+      margin: 10px 0 12px;
+      font-size: clamp(2.1rem, 5vw, 4.7rem);
+      line-height: 0.98;
+      letter-spacing: -0.055em;
+    }
+
+    .lede {
+      max-width: 850px;
+      margin: 0;
+      color: var(--muted);
+      font-size: clamp(1rem, 2vw, 1.18rem);
+    }
+
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin: 30px 0 20px;
+    }
+
+    .stat {
+      min-height: 112px;
+      padding: 18px;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: linear-gradient(145deg, rgb(29 38 51 / 94%), rgb(18 24 33 / 94%));
+      box-shadow: var(--shadow);
+    }
+
+    .stat strong {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 1.75rem;
+      letter-spacing: -0.04em;
+    }
+
+    .stat span { color: var(--muted); font-size: 0.88rem; }
+
+    .notice {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 12px;
+      margin: 18px 0 26px;
+      padding: 16px 18px;
+      border: 1px solid #624049;
+      border-radius: 14px;
+      background: rgb(89 39 50 / 24%);
+    }
+
+    .notice strong { color: #fecaca; }
+    .notice p { margin: 2px 0 0; color: #d8b5bc; }
+
+    .controls {
+      position: sticky;
+      top: 10px;
+      z-index: 5;
+      display: grid;
+      grid-template-columns: minmax(260px, 1fr) minmax(190px, 0.32fr) auto auto;
+      gap: 10px;
+      align-items: center;
+      margin: 0 0 12px;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: rgb(15 20 28 / 88%);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+    }
+
+    .field {
+      width: 100%;
+      min-height: 44px;
+      padding: 0 13px;
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      outline: none;
+      background: var(--surface-2);
+    }
+
+    .field:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgb(122 162 247 / 16%); }
+
+    .button {
+      min-height: 44px;
+      padding: 0 14px;
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--surface-2);
+      cursor: pointer;
+    }
+
+    .button:hover { border-color: #53647d; background: #222d3c; }
+
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 0 0 16px;
+    }
+
+    .chip {
+      padding: 7px 11px;
+      color: var(--muted);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: transparent;
+      cursor: pointer;
+    }
+
+    .chip:hover, .chip.active { color: var(--text); border-color: #53647d; background: var(--surface-2); }
+    .chip b { margin-left: 5px; color: inherit; }
+
+    .result-line {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      margin: 4px 2px 10px;
+      color: var(--muted);
+      font-size: 0.86rem;
+    }
+
+    .table-wrap {
+      overflow: hidden;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: rgb(17 23 32 / 90%);
+      box-shadow: var(--shadow);
+    }
+
+    table { width: 100%; border-collapse: collapse; }
+
+    th {
+      padding: 13px 14px;
+      color: var(--muted);
+      font-size: 0.74rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-align: left;
+      text-transform: uppercase;
+      background: #111822;
+    }
+
+    td {
+      padding: 14px;
+      border-top: 1px solid rgb(43 53 69 / 72%);
+      vertical-align: top;
+    }
+
+    tbody tr:hover { background: rgb(122 162 247 / 5%); }
+
+    .category {
+      width: 12%;
+      color: var(--muted);
+      font-size: 0.83rem;
+      font-weight: 700;
+    }
+
+    .keys { width: 22%; }
+    .action { width: 22%; font-weight: 650; }
+    .cursor { width: 30%; color: #c1ccda; }
+    .status-cell { width: 14%; }
+
+    kbd, code {
+      font-family: "JetBrainsMono Nerd Font", "JetBrains Mono", ui-monospace, SFMono-Regular, Consolas, monospace;
+    }
+
+    kbd {
+      display: inline-block;
+      margin: 0 4px 5px 0;
+      padding: 3px 7px;
+      color: #e9f0fb;
+      border: 1px solid #44536a;
+      border-bottom-color: #263246;
+      border-radius: 6px;
+      background: #202a39;
+      box-shadow: inset 0 -1px 0 #111822;
+      font-size: 0.78rem;
+      white-space: nowrap;
+    }
+
+    code { color: #bdd0ff; font-size: 0.84em; }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 9px;
+      border: 1px solid currentColor;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .badge::before { width: 6px; height: 6px; border-radius: 50%; background: currentColor; content: ""; }
+    .badge.current { color: var(--current); }
+    .badge.native { color: var(--native); }
+    .badge.exact { color: var(--exact); }
+    .badge.approx { color: var(--approx); }
+    .badge.extension { color: var(--extension); }
+    .badge.conflict { color: var(--conflict); }
+    .badge.none { color: var(--none); }
+
+    mark { color: inherit; background: #5e4b16; border-radius: 3px; }
+
+    .empty {
+      padding: 60px 20px;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    details {
+      margin-top: 20px;
+      padding: 16px 18px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: var(--surface);
+    }
+
+    summary { cursor: pointer; font-weight: 750; }
+    details p, details li { color: var(--muted); }
+    details ul { margin-bottom: 0; }
+
+    .sources {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 18px;
+      margin-top: 14px;
+      font-size: 0.88rem;
+    }
+
+    .toast {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      z-index: 20;
+      padding: 11px 15px;
+      border: 1px solid #426b5e;
+      border-radius: 10px;
+      background: #14352e;
+      box-shadow: var(--shadow);
+      opacity: 0;
+      transform: translateY(8px);
+      transition: 160ms ease;
+      pointer-events: none;
+    }
+
+    .toast.show { opacity: 1; transform: translateY(0); }
+
+    @media (max-width: 900px) {
+      .summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .controls { position: static; grid-template-columns: 1fr 1fr; }
+      .controls .search { grid-column: 1 / -1; }
+      .table-wrap { overflow-x: auto; }
+      table { min-width: 920px; }
+    }
+
+    @media (max-width: 560px) {
+      .shell { width: min(100% - 20px, 1480px); padding-top: 28px; }
+      .summary { grid-template-columns: 1fr; }
+      .controls { grid-template-columns: 1fr; }
+      .controls .search { grid-column: auto; }
+      .result-line { flex-direction: column; gap: 2px; }
+    }
+
+    @media print {
+      :root { color-scheme: light; --bg: #fff; --surface: #fff; --surface-2: #fff; --border: #bbb; --text: #111; --muted: #555; }
+      body { background: #fff; }
+      .shell { width: 100%; padding: 0; }
+      .controls, .filters, .button, .toast { display: none !important; }
+      .stat, .table-wrap { box-shadow: none; }
+      tr { break-inside: avoid; }
+      kbd { color: #111; background: #eee; box-shadow: none; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <div class="eyebrow">Dotfiles reference · generated 2026-08-25</div>
+    <h1>Neovim → Cursor keybinding comparison</h1>
+    <p class="lede">
+      A read-only audit of the active LazyVim runtime, compared with Cursor 3.16.29 and
+      VSCodeVim 1.32.4. Aliases and mode duplicates are grouped so the list stays usable.
+    </p>
+
+    <section class="summary" aria-label="Audit summary">
+      <div class="stat"><strong>402</strong><span>resolved Neovim mappings audited</span></div>
+      <div class="stat"><strong id="groupCount">0</strong><span>comparison groups in this report</span></div>
+      <div class="stat"><strong>Space</strong><span>Neovim leader; Cursor currently uses <code>\</code></span></div>
+      <div class="stat"><strong>55</strong><span>tracked modal and contextual remap definitions</span></div>
+    </section>
+
+    <section class="notice">
+      <strong>First pass active</strong>
+      <p>
+        Leader is now Space. The selected exact ports and <code>Space K</code> hover are installed;
+        blank-line insertion was skipped. <code>Space u h</code> remains unbound because this Cursor
+        build exposes an inlay-hints setting but no callable toggle command.
+      </p>
+    </section>
+
+    <section class="controls" aria-label="Report controls">
+      <input id="search" class="field search" type="search" autocomplete="off"
+             placeholder="Search keys, actions, commands…  (press / to focus)" aria-label="Search comparisons">
+      <select id="category" class="field" aria-label="Filter by category">
+        <option value="all">All categories</option>
+      </select>
+      <button id="copy" class="button" type="button">Copy visible</button>
+      <button id="reset" class="button" type="button">Reset</button>
+    </section>
+
+    <div id="statusFilters" class="filters" aria-label="Filter by compatibility"></div>
+    <div class="result-line">
+      <span id="resultCount"></span>
+      <span>Click a status chip to filter · print layout is built in</span>
+    </div>
+
+    <section class="table-wrap" aria-live="polite">
+      <table>
+        <thead>
+          <tr>
+            <th>Category</th>
+            <th>Neovim keys</th>
+            <th>Neovim action</th>
+            <th>Cursor / VSCodeVim equivalent</th>
+            <th>Compatibility</th>
+          </tr>
+        </thead>
+        <tbody id="rows"></tbody>
+      </table>
+      <div id="empty" class="empty" hidden>No comparisons match the current filters.</div>
+    </section>
+
+    <details>
+      <summary>Scope, interpretation, and source files</summary>
+      <p>
+        “All mappings” here means the meaningful custom and inherited mappings from the active
+        runtime. Stock Vim’s full operator/motion grammar is treated as the VSCodeVim baseline
+        instead of expanding hundreds of standard combinations into separate rows.
+      </p>
+      <ul>
+        <li><strong>Native:</strong> VSCodeVim or Cursor already provides substantially the same behavior.</li>
+        <li><strong>Exact port:</strong> a stable Cursor command exists and can be assigned to the same key.</li>
+        <li><strong>Approximation:</strong> a useful Cursor action exists, but semantics differ.</li>
+        <li><strong>Extension:</strong> an additional Cursor extension would be required.</li>
+        <li><strong>No equivalent:</strong> the feature depends on Neovim, its plugin runtime, or Herdr.</li>
+      </ul>
+      <nav class="sources" aria-label="Source files">
+        <a href="../nvim/lua/config/keymaps.lua">Custom keymaps</a>
+        <a href="../nvim/lua/plugins/fff.lua">FFF mappings</a>
+        <a href="../nvim/lua/plugins/blink.lua">Blink mappings</a>
+        <a href="../nvim/lua/plugins/tmux.lua">Herdr navigation</a>
+        <a href="../nvim/lazyvim.json">LazyVim extras</a>
+        <a href="settings.json">Cursor settings</a>
+        <a href="keybindings.json">Cursor keybindings</a>
+      </nav>
+    </details>
+  </main>
+
+  <div id="toast" class="toast" role="status">Copied visible rows</div>
+
+  <script>
+    const rows = [
+      // Current behavior and conflicts
+      { c: "Current behavior", k: ["<leader>"], a: "Leader key", e: "Space is configured in both Neovim and VSCodeVim.", s: "current" },
+      { c: "Current behavior", k: ["Ctrl+B"], a: "Page backward", e: "Passed to Cursor: toggle sidebar.", s: "conflict" },
+      { c: "Current behavior", k: ["Ctrl+F"], a: "Page forward", e: "Passed to Cursor: Find.", s: "conflict" },
+      { c: "Current behavior", k: ["Ctrl+N"], a: "FFF next item", e: "Passed to Cursor: New File or native picker navigation.", s: "conflict" },
+      { c: "Current behavior", k: ["Ctrl+P"], a: "FFF previous item", e: "Passed to Cursor: Quick Open.", s: "conflict" },
+      { c: "Current behavior", k: ["Ctrl+H/J/K/L"], a: "Navigate Neovim and Herdr panes", e: "No equivalent mapping is configured in Cursor.", s: "conflict" },
+      { c: "Current behavior", k: ["H", "L"], a: "Previous / next buffer", e: "VSCodeVim retains its standard screen-top / screen-bottom motions.", s: "conflict" },
+
+      // Editing
+      { c: "Editing", k: ["j", "k", "Up", "Down"], a: "Move by display line when wrapped", e: "Broadly native to VSCodeVim.", s: "native" },
+      { c: "Editing", k: ["n", "N"], a: "Next / previous search result consistently", e: "Native VSCodeVim search navigation.", s: "native" },
+      { c: "Editing", k: ["Visual *", "Visual #"], a: "Search selected text", e: "Supported by vim.visualstar; currently disabled.", s: "exact" },
+      { c: "Editing", k: ["Esc"], a: "Escape, clear search highlight, stop snippet", e: "Can be remapped with :nohl plus Escape; not currently equivalent.", s: "exact" },
+      { c: "Editing", k: ["Alt+J", "Alt+K"], a: "Move line or selection", e: "editor.action.moveLinesDownAction / moveLinesUpAction.", s: "exact" },
+      { c: "Editing", k: ["Ctrl+S"], a: "Save in normal, insert, and visual modes", e: "Cursor handles Ctrl+S natively.", s: "current" },
+      { c: "Editing", k: ["Ctrl+B", "Ctrl+F"], a: "Page backward / forward", e: "VSCodeVim supports it, but current pass-through intentionally changes the behavior.", s: "conflict" },
+      { c: "Editing", k: ["Visual <", "Visual >"], a: "Indent and preserve the selection", e: "Can be reproduced with VSCodeVim remaps.", s: "exact" },
+      { c: "Editing", k: ["[ Space", "] Space"], a: "Insert blank line above / below", e: "Cursor insert-line commands can reproduce this.", s: "exact" },
+      { c: "Editing", k: ["gc", "gcc"], a: "Comment selection / line", e: "Available through VSCodeVim and Cursor commenting commands.", s: "native" },
+      { c: "Editing", k: ["gco", "gcO"], a: "Add commented line below / above", e: "Possible only as a command sequence.", s: "approx" },
+      { c: "Editing", k: ["gx"], a: "Open path or URL under cursor", e: "editor.action.openLink.", s: "exact" },
+      { c: "Editing", k: ["Space K"], a: "LSP hover", e: "Mapped to editor.action.showHover.", s: "current" },
+      { c: "Editing", k: ["Tab", "Shift+Tab"], a: "Jump snippet placeholders", e: "Native Cursor snippet navigation.", s: "native" },
+      { c: "Editing", k: ["Insert Ctrl+J", "Insert Ctrl+K"], a: "Next / previous completion", e: "selectNextSuggestion / selectPrevSuggestion with suggestion-widget context.", s: "exact" },
+      { c: "Editing", k: ["quotes", "brackets", "Enter", "Backspace"], a: "MiniPairs behavior", e: "Cursor’s native auto-closing is broadly equivalent.", s: "native" },
+      { c: "Editing", k: ["a", "i", "an/in", "al/il"], a: "Mini.ai text objects", e: "Basic Vim text objects exist; next/last variants do not.", s: "approx" },
+      { c: "Editing", k: ["[n", "]n", "[N", "]N", "g[", "g]"], a: "Treesitter node and sibling selection", e: "No VSCodeVim AST text-object equivalent.", s: "none" },
+
+      // Files and buffers
+      { c: "Files & buffers", k: ["Space Space", "Space ff"], a: "Find files from project root", e: "workbench.action.quickOpen.", s: "exact" },
+      { c: "Files & buffers", k: ["Space fF"], a: "Find files from current directory", e: "Quick Open searches the workspace rather than an arbitrary cwd.", s: "approx" },
+      { c: "Files & buffers", k: ["Space fg"], a: "Find Git-tracked files", e: "No native Quick Open filter for Git-tracked files only.", s: "none" },
+      { c: "Files & buffers", k: ["Space /", "Space sg"], a: "Grep project root", e: "workbench.action.findInFiles.", s: "exact" },
+      { c: "Files & buffers", k: ["Space sG"], a: "Grep current directory", e: "Find in Files can approximate this with files-to-include.", s: "approx" },
+      { c: "Files & buffers", k: ["Space sw", "Space sW"], a: "Grep word or selection in root / cwd", e: "Find in Files seeded from the selection; cwd distinction remains approximate.", s: "approx" },
+      { c: "Files & buffers", k: ["Space sB"], a: "Grep open buffers", e: "No direct native search scope for open editors only.", s: "none" },
+      { c: "Files & buffers", k: ["Space sb"], a: "Search lines in current buffer", e: "Find or Go to Line; no matching fuzzy line picker.", s: "approx" },
+      { c: "Files & buffers", k: ["Space e", "Space fe"], a: "Root explorer", e: "workbench.view.explorer.", s: "exact" },
+      { c: "Files & buffers", k: ["Space E", "Space fE"], a: "Current-directory explorer", e: "Explorer view, without Neovim’s root/cwd distinction.", s: "approx" },
+      { c: "Files & buffers", k: ["Space fc"], a: "Open Neovim config", e: "Open Cursor Settings JSON is the corresponding editor action.", s: "approx" },
+      { c: "Files & buffers", k: ["Space fr", "Space fR"], a: "Recent files from root / cwd", e: "Open Recent or Quick Open; cwd distinction is approximate.", s: "approx" },
+      { c: "Files & buffers", k: ["Space fp"], a: "Project picker", e: "workbench.action.openRecent for folders and workspaces.", s: "approx" },
+      { c: "Files & buffers", k: ["Space ,", "Space fb", "Space fB"], a: "Buffer picker", e: "workbench.action.showAllEditors.", s: "exact" },
+      { c: "Files & buffers", k: ["[b", "]b"], a: "Previous / next buffer", e: "Mapped to workbench.action.previousEditor / nextEditor; H/L remain untouched.", s: "current" },
+      { c: "Files & buffers", k: ["Space bb", "Space `"], a: "Switch to alternate buffer", e: "Quick Open Previous Recently Used Editor in Group.", s: "exact" },
+      { c: "Files & buffers", k: ["Space bd"], a: "Delete buffer", e: "workbench.action.closeActiveEditor.", s: "exact" },
+      { c: "Files & buffers", k: ["Space bD"], a: "Delete buffer and window", e: "Close editor and possibly its editor group.", s: "approx" },
+      { c: "Files & buffers", k: ["Space bo"], a: "Delete other buffers", e: "workbench.action.closeOtherEditors.", s: "exact" },
+      { c: "Files & buffers", k: ["Space bi"], a: "Delete invisible buffers", e: "No direct Cursor equivalent.", s: "none" },
+      { c: "Files & buffers", k: ["Space fn"], a: "New file", e: "workbench.action.files.newUntitledFile.", s: "exact" },
+      { c: "Files & buffers", k: ["Space .", "Space S"], a: "Toggle / select scratch buffer", e: "Untitled editors approximate scratch buffers.", s: "approx" },
+      { c: "Files & buffers", k: ["Space h"], a: "Harpoon quick menu", e: "Show All Editors or pinned editors; no persistent Harpoon list.", s: "approx" },
+      { c: "Files & buffers", k: ["Space H"], a: "Add file to Harpoon", e: "Pin Editor is a close approximation.", s: "approx" },
+      { c: "Files & buffers", k: ["Space 1…9"], a: "Jump to Harpoon slot", e: "Open Editor at Index 1–9.", s: "approx" },
+
+      // LSP and diagnostics
+      { c: "Code & LSP", k: ["gra"], a: "Code action", e: "editor.action.codeAction / quickFix.", s: "exact" },
+      { c: "Code & LSP", k: ["grn"], a: "Rename symbol", e: "editor.action.rename.", s: "exact" },
+      { c: "Code & LSP", k: ["gri"], a: "Go to implementation", e: "editor.action.goToImplementation.", s: "exact" },
+      { c: "Code & LSP", k: ["grr"], a: "Find references", e: "editor.action.goToReferences.", s: "exact" },
+      { c: "Code & LSP", k: ["grt"], a: "Go to type definition", e: "editor.action.goToTypeDefinition.", s: "exact" },
+      { c: "Code & LSP", k: ["grx"], a: "Run CodeLens", e: "CodeLens commands are available when the language extension provides them.", s: "exact" },
+      { c: "Code & LSP", k: ["gO"], a: "Document symbols", e: "workbench.action.gotoSymbol.", s: "exact" },
+      { c: "Code & LSP", k: ["Space cs"], a: "Symbol list through Trouble", e: "Outline or Go to Symbol, without Trouble’s combined view.", s: "approx" },
+      { c: "Code & LSP", k: ["Space cS"], a: "References and definitions through Trouble", e: "References view is a useful approximation.", s: "approx" },
+      { c: "Code & LSP", k: ["Space cf"], a: "Format document or selection", e: "editor.action.formatDocument / formatSelection.", s: "exact" },
+      { c: "Code & LSP", k: ["Space cF"], a: "Format injected language", e: "No direct native equivalent.", s: "none" },
+      { c: "Code & LSP", k: ["Space cd", "Ctrl+W d"], a: "Line diagnostics", e: "Show diagnostic or hover; presentation differs.", s: "approx" },
+      { c: "Code & LSP", k: ["[d", "]d"], a: "Previous / next diagnostic", e: "editor.action.marker.prev / next.", s: "exact" },
+      { c: "Code & LSP", k: ["[e", "]e", "[w", "]w"], a: "Previous / next error or warning", e: "Cursor navigation is less neatly severity-scoped.", s: "approx" },
+      { c: "Code & LSP", k: ["[D", "]D"], a: "First / last diagnostic", e: "No direct command.", s: "none" },
+      { c: "Code & LSP", k: ["Space sd", "Space sD", "Space xx", "Space xX"], a: "Workspace / buffer diagnostics", e: "Problems panel, without Trouble’s layouts.", s: "approx" },
+      { c: "Code & LSP", k: ["Space xl", "Space xL", "Space sl"], a: "Location list", e: "Problems panel approximation.", s: "approx" },
+      { c: "Code & LSP", k: ["Space xq", "Space xQ", "Space sq"], a: "Quickfix list", e: "Problems panel approximation.", s: "approx" },
+      { c: "Code & LSP", k: ["[q", "]q"], a: "Previous / next quickfix item", e: "Previous / next problem.", s: "approx" },
+      { c: "Code & LSP", k: ["Space st", "Space sT", "Space xt", "Space xT", "[t", "]t"], a: "TODO and FIX/FIXME navigation", e: "Requires a TODO-highlighting/navigation extension.", s: "extension" },
+
+      // Windows and terminal
+      { c: "Windows & terminal", k: ["Ctrl+H/J/K/L"], a: "Navigate splits, then hand off to Herdr", e: "Cursor can navigate editor groups, but cannot reproduce Herdr edge handoff.", s: "approx" },
+      { c: "Windows & terminal", k: ["Ctrl+Arrow"], a: "Resize split", e: "Editor-group resize commands are a close approximation.", s: "approx" },
+      { c: "Windows & terminal", k: ["Space -"], a: "Split window below", e: "workbench.action.splitEditorDown.", s: "exact" },
+      { c: "Windows & terminal", k: ["Space |"], a: "Split window right", e: "workbench.action.splitEditorRight.", s: "exact" },
+      { c: "Windows & terminal", k: ["Space wd"], a: "Close split", e: "workbench.action.closeGroup.", s: "exact" },
+      { c: "Windows & terminal", k: ["Space wm", "Space uZ"], a: "Zoom current split", e: "workbench.action.toggleMaximizeEditorGroup.", s: "exact" },
+      { c: "Windows & terminal", k: ["Space uz"], a: "Zen mode", e: "workbench.action.toggleZenMode.", s: "exact" },
+      { c: "Windows & terminal", k: ["Ctrl+/", "Space ft"], a: "Terminal at project root", e: "Integrated terminal normally starts at the workspace root.", s: "approx" },
+      { c: "Windows & terminal", k: ["Space fT"], a: "Terminal at current directory", e: "Possible, with Cursor terminal cwd limitations.", s: "approx" },
+      { c: "Windows & terminal", k: ["Space Tab Tab"], a: "New Neovim tab", e: "New editor or editor group; the tab models differ.", s: "approx" },
+      { c: "Windows & terminal", k: ["Space Tab [", "Space Tab ]"], a: "Previous / next tab", e: "Previous / next editor.", s: "approx" },
+      { c: "Windows & terminal", k: ["Space Tab f", "Space Tab l"], a: "First / last tab", e: "First / last editor in group.", s: "approx" },
+      { c: "Windows & terminal", k: ["Space Tab d", "Space Tab o"], a: "Close tab / close other tabs", e: "Close Editor / Close Other Editors.", s: "approx" },
+      { c: "Windows & terminal", k: ["Space qs", "Space ql", "Space qS"], a: "Restore or select session", e: "Window restoration and Open Recent are only approximations.", s: "approx" },
+      { c: "Windows & terminal", k: ["Space qd"], a: "Do not save current session", e: "No direct equivalent.", s: "none" },
+      { c: "Windows & terminal", k: ["Space qq"], a: "Quit all", e: "Close Window or Quit.", s: "exact" },
+
+      // Git and tooling
+      { c: "Git & tooling", k: ["Space gs"], a: "Git status", e: "Source Control view.", s: "exact" },
+      { c: "Git & tooling", k: ["Space gd", "Space gD"], a: "Diff hunks / origin", e: "Source Control diff, with different navigation semantics.", s: "approx" },
+      { c: "Git & tooling", k: ["Space gS"], a: "Git stash picker", e: "Git stash commands exist, but no comparable picker.", s: "approx" },
+      { c: "Git & tooling", k: ["Space gl", "Space gL"], a: "Git log", e: "Timeline or SCM graph.", s: "approx" },
+      { c: "Git & tooling", k: ["Space gf"], a: "Current-file history", e: "Timeline view.", s: "approx" },
+      { c: "Git & tooling", k: ["Space gb"], a: "Blame current line", e: "Requires Git blame functionality from an extension.", s: "extension" },
+      { c: "Git & tooling", k: ["Space gB", "Space gY"], a: "Open / copy remote URL", e: "Requires remote-provider commands or an extension.", s: "extension" },
+      { c: "Git & tooling", k: ["Space gg", "Space gG"], a: "Lazygit at root / cwd", e: "Can launch Lazygit in the terminal; no native Cursor UI equivalent.", s: "approx" },
+      { c: "Git & tooling", k: ["Space gi", "Space gI"], a: "GitHub issues", e: "Requires a GitHub issues extension.", s: "extension" },
+      { c: "Git & tooling", k: ["Space gp", "Space gP"], a: "GitHub pull requests", e: "Requires the GitHub Pull Requests extension.", s: "extension" },
+      { c: "Git & tooling", k: ["Space l", "Space cm"], a: "Lazy / Mason package managers", e: "Cursor Extensions view is the conceptual equivalent.", s: "approx" },
+      { c: "Git & tooling", k: ["Space L"], a: "LazyVim changelog", e: "Not applicable to Cursor.", s: "none" },
+
+      // Pickers and menus
+      { c: "Pickers & menus", k: ["Space sC"], a: "Commands picker", e: "Command Palette.", s: "exact" },
+      { c: "Pickers & menus", k: ["Space sk"], a: "Keymaps picker", e: "Keyboard Shortcuts.", s: "exact" },
+      { c: "Pickers & menus", k: ["Space sm"], a: "Marks picker", e: "VSCodeVim marks work, but there is no matching picker UI.", s: "approx" },
+      { c: "Pickers & menus", k: ["Space sj"], a: "Jumplist picker", e: "VSCodeVim jumplist works, but there is no matching picker UI.", s: "approx" },
+      { c: "Pickers & menus", k: ["Space s\""], a: "Registers picker", e: "Vim registers exist, without a comparable picker.", s: "approx" },
+      { c: "Pickers & menus", k: ["Space s/", "Space sc", "Space :"], a: "Search / command history", e: "Partial Vim command-line support, without a matching picker.", s: "approx" },
+      { c: "Pickers & menus", k: ["Space sr"], a: "Project search and replace", e: "Replace in Files.", s: "exact" },
+      { c: "Pickers & menus", k: ["Space sR"], a: "Resume last picker", e: "No direct equivalent.", s: "none" },
+      { c: "Pickers & menus", k: ["Space sh", "Space sM"], a: "Help / man pages", e: "Documentation search only; no direct picker.", s: "none" },
+      { c: "Pickers & menus", k: ["Space sH"], a: "Highlight groups", e: "Developer: Inspect Editor Tokens and Scopes is approximate.", s: "approx" },
+      { c: "Pickers & menus", k: ["Space sa"], a: "Autocommands", e: "Not applicable to Cursor.", s: "none" },
+      { c: "Pickers & menus", k: ["Space si"], a: "Icon picker", e: "No native equivalent.", s: "none" },
+      { c: "Pickers & menus", k: ["Space sp"], a: "Search plugin specifications", e: "Extensions search is a loose approximation.", s: "approx" },
+      { c: "Pickers & menus", k: ["Space su"], a: "Undo tree", e: "Timeline and local history lack Vim’s undo branches.", s: "approx" },
+      { c: "Pickers & menus", k: ["Space ?"], a: "Buffer-local keymaps via WhichKey", e: "Keyboard Shortcuts has no buffer-local WhichKey view.", s: "approx" },
+
+      // Toggles
+      { c: "Toggles", k: ["Space uw"], a: "Toggle word wrap", e: "editor.action.toggleWordWrap.", s: "exact" },
+      { c: "Toggles", k: ["Space uh"], a: "Toggle inlay hints", e: "Not mapped: this Cursor build exposes no callable toggle command.", s: "none" },
+      { c: "Toggles", k: ["Space ub"], a: "Toggle dark background", e: "Light / dark theme switching is available.", s: "exact" },
+      { c: "Toggles", k: ["Space uC"], a: "Color scheme picker", e: "Preferences: Color Theme.", s: "exact" },
+      { c: "Toggles", k: ["Space ul", "Space uL"], a: "Toggle line / relative numbers", e: "Settings exist, but no clean built-in toggle command.", s: "approx" },
+      { c: "Toggles", k: ["Space uf", "Space uF"], a: "Toggle auto-format globally / buffer", e: "Settings exist, without a simple native toggle.", s: "approx" },
+      { c: "Toggles", k: ["Space us"], a: "Toggle spelling", e: "Requires a spell-checking extension.", s: "extension" },
+      { c: "Toggles", k: ["Space ud"], a: "Toggle diagnostics", e: "Can be approximated through editor settings.", s: "approx" },
+      { c: "Toggles", k: ["Space ug"], a: "Toggle indent guides", e: "Settings-based approximation.", s: "approx" },
+      { c: "Toggles", k: ["Space uS"], a: "Toggle smooth scrolling", e: "Settings-based approximation.", s: "approx" },
+      { c: "Toggles", k: ["Space uA"], a: "Toggle tabline", e: "Settings-based approximation; Cursor tabs are currently hidden.", s: "approx" },
+      { c: "Toggles", k: ["Space up"], a: "Toggle MiniPairs", e: "Cursor auto-closing settings can approximate it.", s: "approx" },
+      { c: "Toggles", k: ["Space uc"], a: "Toggle conceal level", e: "No meaningful Cursor equivalent.", s: "none" },
+      { c: "Toggles", k: ["Space uT"], a: "Toggle Treesitter highlighting", e: "Not applicable to Cursor’s tokenizer.", s: "none" },
+      { c: "Toggles", k: ["Space uD", "Space ua"], a: "Toggle dimming / animations", e: "No comparable editor toggle.", s: "none" },
+      { c: "Toggles", k: ["Space dpp", "Space dph", "Space dps"], a: "Profiler controls and scratch buffer", e: "No user-facing equivalent.", s: "none" },
+      { c: "Toggles", k: ["Space un", "Space n"], a: "Dismiss / show notifications", e: "Cursor notification commands provide a close equivalent.", s: "approx" },
+      { c: "Toggles", k: ["Space sn", "Space sna", "Space snd", "Space snh", "Space snl", "Space snt"], a: "Noice message history and actions", e: "Only partial notification equivalents exist.", s: "approx" },
+      { c: "Toggles", k: ["Space ur"], a: "Redraw, clear search, update diff", e: "Clearing search is possible; redraw and diff update are not relevant.", s: "approx" },
+      { c: "Toggles", k: ["Space ui", "Space uI"], a: "Inspect position / syntax tree", e: "Inspect Editor Tokens and Scopes is only a partial equivalent.", s: "approx" }
+    ];
+
+    const statusMeta = {
+      current:   { label: "Already current", order: 0 },
+      native:    { label: "VSCodeVim native", order: 1 },
+      exact:     { label: "Exact port", order: 2 },
+      approx:    { label: "Approximation", order: 3 },
+      extension: { label: "Extension", order: 4 },
+      conflict:  { label: "Current conflict", order: 5 },
+      none:      { label: "No equivalent", order: 6 }
+    };
+
+    const state = { query: "", category: "all", status: "all" };
+    const search = document.querySelector("#search");
+    const category = document.querySelector("#category");
+    const tbody = document.querySelector("#rows");
+    const empty = document.querySelector("#empty");
+    const resultCount = document.querySelector("#resultCount");
+    const statusFilters = document.querySelector("#statusFilters");
+    const toast = document.querySelector("#toast");
+
+    const escapeHtml = (value) => String(value).replace(/[&<>'"]/g, (ch) => ({
+      "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;"
+    })[ch]);
+
+    function highlight(value) {
+      const safe = escapeHtml(value);
+      if (!state.query) return safe;
+      const escaped = state.query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      return safe.replace(new RegExp(`(${escaped})`, "ig"), "<mark>$1</mark>");
+    }
+
+    function filteredRows() {
+      const q = state.query.toLowerCase();
+      return rows.filter((row) => {
+        const matchesCategory = state.category === "all" || row.c === state.category;
+        const matchesStatus = state.status === "all" || row.s === state.status;
+        const haystack = [row.c, row.k.join(" "), row.a, row.e, statusMeta[row.s].label].join(" ").toLowerCase();
+        return matchesCategory && matchesStatus && (!q || haystack.includes(q));
+      });
+    }
+
+    function render() {
+      const visible = filteredRows();
+      tbody.innerHTML = visible.map((row) => `
+        <tr>
+          <td class="category">${highlight(row.c)}</td>
+          <td class="keys">${row.k.map((key) => `<kbd>${highlight(key)}</kbd>`).join("")}</td>
+          <td class="action">${highlight(row.a)}</td>
+          <td class="cursor">${highlight(row.e)}</td>
+          <td class="status-cell"><span class="badge ${row.s}">${statusMeta[row.s].label}</span></td>
+        </tr>`).join("");
+      empty.hidden = visible.length !== 0;
+      document.querySelector("table").hidden = visible.length === 0;
+      resultCount.textContent = `${visible.length} of ${rows.length} comparison groups shown`;
+      document.querySelectorAll(".chip").forEach((chip) => chip.classList.toggle("active", chip.dataset.status === state.status));
+    }
+
+    function setupFilters() {
+      [...new Set(rows.map((row) => row.c))].sort().forEach((name) => {
+        const option = document.createElement("option");
+        option.value = name;
+        option.textContent = name;
+        category.append(option);
+      });
+
+      const counts = rows.reduce((acc, row) => ({ ...acc, [row.s]: (acc[row.s] || 0) + 1 }), {});
+      const filters = [["all", "All", rows.length], ...Object.entries(statusMeta)
+        .sort((a, b) => a[1].order - b[1].order)
+        .map(([key, meta]) => [key, meta.label, counts[key] || 0])];
+
+      statusFilters.innerHTML = filters.map(([key, label, count]) =>
+        `<button class="chip${key === "all" ? " active" : ""}" type="button" data-status="${key}">${label}<b>${count}</b></button>`
+      ).join("");
+    }
+
+    async function copyVisible() {
+      const visible = filteredRows();
+      const lines = [
+        "| Category | Neovim keys | Action | Cursor / VSCodeVim | Compatibility |",
+        "|---|---|---|---|---|",
+        ...visible.map((row) => `| ${row.c} | ${row.k.map((key) => `\`${key}\``).join(", ")} | ${row.a} | ${row.e} | ${statusMeta[row.s].label} |`)
+      ];
+      const text = lines.join("\n");
+      try {
+        await navigator.clipboard.writeText(text);
+      } catch {
+        const area = document.createElement("textarea");
+        area.value = text;
+        document.body.append(area);
+        area.select();
+        document.execCommand("copy");
+        area.remove();
+      }
+      toast.classList.add("show");
+      setTimeout(() => toast.classList.remove("show"), 1400);
+    }
+
+    setupFilters();
+    document.querySelector("#groupCount").textContent = rows.length;
+    render();
+
+    search.addEventListener("input", () => { state.query = search.value.trim(); render(); });
+    category.addEventListener("change", () => { state.category = category.value; render(); });
+    statusFilters.addEventListener("click", (event) => {
+      const chip = event.target.closest(".chip");
+      if (!chip) return;
+      state.status = chip.dataset.status;
+      render();
+    });
+    document.querySelector("#copy").addEventListener("click", copyVisible);
+    document.querySelector("#reset").addEventListener("click", () => {
+      state.query = "";
+      state.category = "all";
+      state.status = "all";
+      search.value = "";
+      category.value = "all";
+      render();
+    });
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "/" && !["INPUT", "SELECT", "TEXTAREA"].includes(document.activeElement.tagName)) {
+        event.preventDefault();
+        search.focus();
+      }
+      if (event.key === "Escape" && document.activeElement === search) {
+        search.value = "";
+        state.query = "";
+        search.blur();
+        render();
+      }
+    });
+  </script>
+</body>
+</html>

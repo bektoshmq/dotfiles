@@ -1,0 +1,6 @@
+# Keep one extension ID per line. Versions are intentionally not pinned so that
+# Cursor can continue applying security and compatibility updates.
+anysphere.remote-containers
+anysphere.remote-ssh
+golang.go
+vscodevim.vim

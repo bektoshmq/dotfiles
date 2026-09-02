@@ -1,0 +1,303 @@
+{ "workbench.colorTheme": "Ship at Sea",
+  "window.confirmBeforeClose": "always",
+  "window.commandCenter": false,
+  "workbench.sideBar.location": "right",
+  "workbench.editor.showTabs": "none",
+  "workbench.editor.limit.enabled": true,
+  "workbench.editor.limit.perEditorGroup": true,
+  "workbench.editor.limit.value": 9,
+  "workbench.layoutControl.enabled": false,
+  "workbench.reduceMotion": "off",
+  "workbench.list.smoothScrolling": true,
+  "breadcrumbs.enabled": false,
+
+  "editor.fontFamily": "JetBrainsMono Nerd Font",
+  "editor.fontSize": 18,
+  "editor.fontWeight": "400",
+  "editor.fontLigatures": "'calt', 'liga', 'dlig', 'ss01', 'ss02', 'ss03', 'ss04', 'ss05', 'zero'",
+  "editor.lineNumbers": "relative",
+  "editor.cursorStyle": "block",
+  "editor.cursorBlinking": "smooth",
+  "editor.cursorSmoothCaretAnimation": "on",
+  "editor.smoothScrolling": true,
+  "editor.minimap.enabled": false,
+  "editor.scrollbar.vertical": "hidden",
+  "editor.scrollbar.horizontal": "hidden",
+  "editor.stickyScroll.enabled": false,
+  "editor.guides.indentation": false,
+  "editor.inlayHints.enabled": "off",
+  "editor.renderWhitespace": "none",
+  "editor.formatOnSave": true,
+  "editor.detectIndentation": true,
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+
+  "files.autoSave": "off",
+  "files.insertFinalNewline": true,
+  "files.trimTrailingWhitespace": true,
+
+  "terminal.integrated.fontFamily": "JetBrainsMono Nerd Font",
+  "terminal.integrated.cursorBlinking": true,
+  "terminal.integrated.smoothScrolling": true,
+  "debug.console.fontFamily": "JetBrainsMono Nerd Font",
+
+  "vim.useSystemClipboard": true,
+  "vim.smartRelativeLine": true,
+  "vim.leader": "<space>",
+  "vim.visualstar": true,
+  "vim.handleKeys": {
+    "<C-b>": false,
+    "<C-f>": false,
+    "<C-n>": false,
+    "<C-p>": false
+  },
+  "vim.normalModeKeyBindingsNonRecursive": [
+    {
+      "before": ["<Esc>"],
+      "after": ["<Esc>"],
+      "commands": [":nohl"],
+      "silent": true
+    },
+    {
+      "before": ["g", "x"],
+      "commands": ["editor.action.openLink"]
+    },
+    {
+      "before": ["K"],
+      "commands": ["editor.action.showHover"]
+    },
+    {
+      "before": ["<leader>", "<leader>"],
+      "commands": ["workbench.action.quickOpen"]
+    },
+    {
+      "before": ["<leader>", "f", "f"],
+      "commands": ["workbench.action.quickOpen"]
+    },
+    {
+      "before": ["<leader>", "/"],
+      "commands": ["workbench.action.findInFiles"]
+    },
+    {
+      "before": ["<leader>", "s", "g"],
+      "commands": ["workbench.action.findInFiles"]
+    },
+    {
+      "before": ["<leader>", "e"],
+      "commands": ["workbench.view.explorer"]
+    },
+    {
+      "before": ["<leader>", "f", "e"],
+      "commands": ["workbench.view.explorer"]
+    },
+    {
+      "before": ["<leader>", ","],
+      "commands": ["workbench.action.showAllEditors"]
+    },
+    {
+      "before": ["<leader>", "f", "b"],
+      "commands": ["workbench.action.showAllEditors"]
+    },
+    {
+      "before": ["<leader>", "f", "B"],
+      "commands": ["workbench.action.showAllEditors"]
+    },
+    {
+      "before": ["[", "b"],
+      "commands": ["workbench.action.previousEditor"]
+    },
+    {
+      "before": ["]", "b"],
+      "commands": ["workbench.action.nextEditor"]
+    },
+    {
+      "before": ["<leader>", "b", "b"],
+      "commands": ["workbench.action.openPreviousRecentlyUsedEditorInGroup"]
+    },
+    {
+      "before": ["<leader>", "`"],
+      "commands": ["workbench.action.openPreviousRecentlyUsedEditorInGroup"]
+    },
+    {
+      "before": ["<leader>", "b", "d"],
+      "commands": ["workbench.action.closeActiveEditor"]
+    },
+    {
+      "before": ["<leader>", "b", "o"],
+      "commands": ["workbench.action.closeOtherEditors"]
+    },
+    {
+      "before": ["<leader>", "f", "n"],
+      "commands": ["workbench.action.files.newUntitledFile"]
+    },
+    {
+      "before": ["g", "r", "a"],
+      "commands": ["editor.action.quickFix"]
+    },
+    {
+      "before": ["<leader>", "c", "a"],
+      "commands": ["editor.action.quickFix"]
+    },
+    {
+      "before": ["g", "r", "n"],
+      "commands": ["editor.action.rename"]
+    },
+    {
+      "before": ["<leader>", "c", "r"],
+      "commands": ["editor.action.rename"]
+    },
+    {
+      "before": ["g", "r", "i"],
+      "commands": ["editor.action.goToImplementation"]
+    },
+    {
+      "before": ["g", "r", "r"],
+      "commands": ["editor.action.goToReferences"]
+    },
+    {
+      "before": ["g", "r", "t"],
+      "commands": ["editor.action.goToTypeDefinition"]
+    },
+    {
+      "before": ["g", "r", "x"],
+      "commands": ["codelens.showLensesInCurrentLine"]
+    },
+    {
+      "before": ["g", "O"],
+      "commands": ["workbench.action.gotoSymbol"]
+    },
+    {
+      "before": ["<leader>", "s", "s"],
+      "commands": ["workbench.action.gotoSymbol"]
+    },
+    {
+      "before": ["<leader>", "s", "S"],
+      "commands": ["workbench.action.showAllSymbols"]
+    },
+    {
+      "before": ["<leader>", "c", "f"],
+      "commands": ["editor.action.formatDocument"]
+    },
+    {
+      "before": ["[", "d"],
+      "commands": ["editor.action.marker.prev"]
+    },
+    {
+      "before": ["]", "d"],
+      "commands": ["editor.action.marker.next"]
+    },
+    {
+      "before": ["<leader>", "-"],
+      "commands": ["workbench.action.splitEditorDown"]
+    },
+    {
+      "before": ["<leader>", "|"],
+      "commands": ["workbench.action.splitEditorRight"]
+    },
+    {
+      "before": ["<leader>", "w", "d"],
+      "commands": ["workbench.action.closeGroup"]
+    },
+    {
+      "before": ["<leader>", "w", "m"],
+      "commands": ["workbench.action.toggleMaximizeEditorGroup"]
+    },
+    {
+      "before": ["<leader>", "u", "Z"],
+      "commands": ["workbench.action.toggleMaximizeEditorGroup"]
+    },
+    {
+      "before": ["<leader>", "u", "z"],
+      "commands": ["workbench.action.toggleZenMode"]
+    },
+    {
+      "before": ["<leader>", "q", "q"],
+      "commands": ["workbench.action.quit"]
+    },
+    {
+      "before": ["<leader>", "g", "s"],
+      "commands": ["workbench.view.scm"]
+    },
+    {
+      "before": ["<leader>", "s", "C"],
+      "commands": ["workbench.action.showCommands"]
+    },
+    {
+      "before": ["<leader>", "s", "k"],
+      "commands": ["workbench.action.openGlobalKeybindings"]
+    },
+    {
+      "before": ["<leader>", "s", "r"],
+      "commands": ["workbench.action.replaceInFiles"]
+    },
+    {
+      "before": ["<leader>", "u", "w"],
+      "commands": ["editor.action.toggleWordWrap"]
+    },
+    {
+      "before": ["<leader>", "u", "b"],
+      "commands": ["workbench.action.toggleLightDarkThemes"]
+    },
+    {
+      "before": ["<leader>", "u", "C"],
+      "commands": ["workbench.action.selectTheme"]
+    }
+  ],
+  "vim.insertModeKeyBindingsNonRecursive": [
+    {
+      "before": ["<Esc>"],
+      "after": ["<Esc>"],
+      "commands": [":nohl"],
+      "silent": true
+    }
+  ],
+  "vim.visualModeKeyBindingsNonRecursive": [
+    {
+      "before": ["<Esc>"],
+      "after": ["<Esc>"],
+      "commands": [":nohl"],
+      "silent": true
+    },
+    {
+      "before": [">"],
+      "commands": ["editor.action.indentLines"]
+    },
+    {
+      "before": ["<"],
+      "commands": ["editor.action.outdentLines"]
+    },
+    {
+      "before": ["g", "x"],
+      "commands": ["editor.action.openLink"]
+    },
+    {
+      "before": ["g", "r", "a"],
+      "commands": ["editor.action.quickFix"]
+    },
+    {
+      "before": ["<leader>", "c", "a"],
+      "commands": ["editor.action.quickFix"]
+    },
+    {
+      "before": ["<leader>", "c", "f"],
+      "commands": ["editor.action.formatSelection"]
+    },
+    {
+      "before": ["<leader>", "s", "r"],
+      "commands": ["workbench.action.replaceInFiles"]
+    }
+  ],
+
+  "[c][cpp]": {
+    "editor.tabSize": 4,
+    "editor.insertSpaces": true
+  },
+  "[go]": {
+    "editor.tabSize": 4,
+    "editor.insertSpaces": false
+  },
+  "[odin]": {
+    "editor.tabSize": 4,
+    "editor.insertSpaces": true
+  }
+}

@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+if ! command -v cursor >/dev/null 2>&1; then
+  echo "cursor is not installed or is not on PATH" >&2
+  exit 1
+fi
+
+script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+
+while IFS= read -r extension; do
+  [[ -z "$extension" || "$extension" == \#* ]] && continue
+  cursor --install-extension "$extension"
+done < "$script_dir/extensions.txt"

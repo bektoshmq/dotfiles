@@ -1,0 +1,26 @@
+[
+  {
+    "key": "alt+j",
+    "command": "editor.action.moveLinesDownAction",
+    "when": "editorTextFocus && vim.active && !editorReadonly && vim.mode != 'CommandlineInProgress' && vim.mode != 'SearchInProgressMode'"
+  },
+  {
+    "key": "alt+k",
+    "command": "editor.action.moveLinesUpAction",
+    "when": "editorTextFocus && vim.active && !editorReadonly && vim.mode != 'CommandlineInProgress' && vim.mode != 'SearchInProgressMode'"
+  },
+  {
+    "key": "ctrl+j",
+    "command": "selectNextSuggestion",
+    "when": "editorTextFocus && vim.active && vim.mode == 'Insert' && suggestWidgetVisible"
+  },
+  {
+    "key": "ctrl+k",
+    "command": "selectPrevSuggestion",
+    "when": "editorTextFocus && vim.active && vim.mode == 'Insert' && suggestWidgetVisible"
+  },
+  {
+    "key": "ctrl+j",
+    "command": "-workbench.action.togglePanel"
+  }
+]
