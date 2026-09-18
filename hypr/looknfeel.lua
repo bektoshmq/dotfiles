@@ -24,6 +24,9 @@ hl.config({
   },
 })
 
+-- Keep workspace transitions quick while retaining the smooth window-movement curve.
+hl.animation({ leaf = "workspaces", enabled = true, speed = 2, bezier = "easeOutQuint", style = "slide" })
+
 -- Override Omarchy's per-app and default opacity rules with exact values.
 o.window(".*", { opacity = "1.0 override 1.0 override 1.0 override" })
 
@@ -31,3 +34,4 @@ o.window(".*", { opacity = "1.0 override 1.0 override 1.0 override" })
 o.window("^md\\.obsidian\\.Obsidian$", { opacity = "0.82 override 0.82 override 0.82 override" })
 o.window("^cursor$", { opacity = "0.82 override 0.82 override 0.82 override" })
 o.window("^chatgpt$", { opacity = "0.82 override 0.82 override 0.82 override" })
+o.window("^inkdrop$", { opacity = "0.82 override 0.82 override 0.82 override" })
