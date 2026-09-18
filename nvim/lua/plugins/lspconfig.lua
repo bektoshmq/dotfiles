@@ -9,6 +9,7 @@ return {
             workspace = {
               library = {
                 vim.fn.expand("~/.local/share/prise/lua"),
+                "/usr/share/hypr/stubs",
               },
             },
           },
