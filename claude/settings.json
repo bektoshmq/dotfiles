@@ -1,0 +1,14 @@
+{
+  "modelSettings": {
+    "claude-opus-5-5": {
+      "effortLevel": "medium"
+    }
+  },
+  "theme": "custom:omarchy",
+  "model": "opus",
+  "statusLine": {
+    "type": "command",
+    "command": "~/dotfiles/claude/statusline.sh"
+  },
+  "editorMode": "vim"
+}
