@@ -1,0 +1,12 @@
+#!/bin/bash
+
+# Remind to drop the temporary Ghostty glass.css blur workaround once Omarchy
+# ships Glassy windows (4.5). See docs/known-issues.md.
+dotfiles="$HOME/dotfiles"
+
+[[ -f $dotfiles/ghostty/glass.css ]] || exit 0
+command -v omarchy-hyprland-window-transparency &>/dev/null || exit 0
+
+omarchy notification send -u critical -g 󰂵 \
+  "Omarchy Glassy windows are here" \
+  "Remove the Ghostty glass.css workaround: see dotfiles/docs/known-issues.md"
