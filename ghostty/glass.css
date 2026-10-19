@@ -1,0 +1,8 @@
+/* TEMPORARY workaround, see docs/known-issues.md. Remove after Omarchy 4.5.
+   GTK 4.24 asks Hyprland to blur behind a window only where a backdrop-filter
+   covers it, so without this rule Ghostty gets no blur. Copied from Omarchy's
+   default/gtk/glass.css (omacom/omarchy#14991); Hyprland's blur settings in
+   hypr/looknfeel.lua decide how it looks. */
+window {
+  backdrop-filter: blur(20px);
+}

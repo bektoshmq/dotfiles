@@ -13,6 +13,9 @@ window-padding-y = 14
 background-opacity = 0.82
 # Keep TUI-painted cells translucent too (tmux, Neovim, etc.).
 background-opacity-cells = true
+# TEMPORARY: restores Hyprland blur under GTK 4.24, see docs/known-issues.md.
+# Remove this line and glass.css once Omarchy 4.5 ships Glassy windows.
+gtk-custom-css = ~/dotfiles/ghostty/glass.css
 confirm-close-surface = false
 resize-overlay = never
 gtk-toolbar-style = flat

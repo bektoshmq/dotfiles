@@ -81,3 +81,38 @@ Notes:
 References:
 - [Nushell issue #15466](https://github.com/nushell/nushell/issues/15466)
 
+
+## Ghostty loses Hyprland blur after GTK 4.24 (Omarchy 4.0.5)
+
+Date: 2026-10-19
+
+Status: TEMPORARY workaround in place. Remove it once Omarchy 4.5 is installed.
+
+Symptoms:
+- After the 2026-10-19 `omarchy update`, Ghostty is still see-through (`background-opacity = 0.82`) but the wallpaper behind it is sharp, not blurred.
+- Electron apps with Hyprland opacity rules (Obsidian, Cursor) still blur normally.
+- Changing Hyprland blur settings (`new_optimizations`, `xray`, size/passes, a 0.99 opacity window rule) makes no difference.
+
+Cause:
+- That update moved `gtk4` 4.22.4 -> 4.24.1 and `libadwaita` 1.9.3 -> 1.10.0.
+- GTK 4.24 registers every window with Hyprland's blur protocol and asks for blur only where a CSS `backdrop-filter` covers it. Without one, GTK apps opt out of blur, and Hyprland 0.56 honors that.
+- Not a Hyprland bug, so no Hyprland fix is coming.
+
+Current workaround:
+- [ghostty/glass.css](../ghostty/glass.css) adds `window { backdrop-filter: blur(20px); }`, copied from Omarchy's own fix.
+- [ghostty/config](../ghostty/config) loads it with `gtk-custom-css = ~/dotfiles/ghostty/glass.css`.
+- Don't set Ghostty's `background-blur = true`: Omarchy's PR notes it would create a second blur object on a window GTK already holds one for.
+
+Reminder:
+- [omarchy/hooks/post-update.d/glass-workaround-check](../omarchy/hooks/post-update.d/glass-workaround-check) (symlinked into `~/.config/omarchy/hooks/post-update.d/`) sends a desktop notification after each `omarchy update` once `omarchy-hyprland-window-transparency` exists and `ghostty/glass.css` is still here.
+
+Removal (after Omarchy 4.5):
+1. Check `omarchy version` reports 4.5 or later and `omarchy hyprland window transparency` exists.
+2. Delete `ghostty/glass.css` and the `gtk-custom-css` line plus its comment in `ghostty/config`.
+   Also delete the reminder hook and its symlink in `~/.config/omarchy/hooks/post-update.d/` (it goes quiet on its own once `glass.css` is gone).
+3. Run `omarchy hyprland window transparency glassy` (or Appearance > Window Transparency > Glassy).
+   Note: Glassy also writes its own terminal opacity (0.65) and blur values; re-check `hypr/looknfeel.lua` and Ghostty's `background-opacity` afterwards if you prefer the current look.
+
+References:
+- [Omarchy PR #14991: Window Transparency / Glassy (4.5 milestone)](https://github.com/omacom/omarchy/pull/14991)
+- [Hyprland issue #16508: no blur behind GTK 4.24.x apps](https://github.com/hyprwm/Hyprland/issues/16508)
