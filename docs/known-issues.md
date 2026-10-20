@@ -116,3 +116,27 @@ Removal (after Omarchy 4.5):
 References:
 - [Omarchy PR #14991: Window Transparency / Glassy (4.5 milestone)](https://github.com/omacom/omarchy/pull/14991)
 - [Hyprland issue #16508: no blur behind GTK 4.24.x apps](https://github.com/hyprwm/Hyprland/issues/16508)
+
+## Ghostty won't open from the launcher after systemd 262
+
+Date: 2026-10-19
+
+Symptoms:
+- Launching Ghostty from the Omarchy launcher (Alt+Space) does nothing when no Ghostty is already running.
+- `journalctl --user -u app-com.mitchellh.ghostty.service` shows:
+  ```text
+  Main process ... lacks handler for reload signal USR2, refusing service startup.
+  Failed with result 'protocol'.
+  ```
+
+Cause:
+- The desktop entry is `DBusActivatable=true`, so the launcher starts `app-com.mitchellh.ghostty.service`, which is `Type=notify-reload` with `ReloadSignal=SIGUSR2`.
+- systemd 262 now refuses to start a `notify-reload` service whose main process has no handler for the reload signal when it reports READY. Ghostty 1.3.1 doesn't install one in time.
+
+Fix (temporary):
+- Drop-in [systemd262.conf](../systemd/user/app-com.mitchellh.ghostty.service.d/systemd262.conf), symlinked into `~/.config/systemd/user/app-com.mitchellh.ghostty.service.d/`, sets `Type=notify`.
+- Config reload still works because `omarchy restart terminal` sends `killall -SIGUSR2 ghostty` itself and doesn't go through systemd.
+
+Removal:
+- Once a Ghostty or systemd update fixes this, delete the drop-in and the symlink, then run `systemctl --user daemon-reload`.
+- To check: `systemd-run --user --unit=gt -p Type=notify-reload -p ReloadSignal=SIGUSR2 ghostty --gtk-single-instance=true --initial-window=false --class=com.example.gt`. If it starts, the workaround is no longer needed. Stop it with `systemctl --user stop gt`.
