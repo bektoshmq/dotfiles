@@ -27,6 +27,9 @@ hl.config({
 -- Keep workspace transitions quick while retaining the smooth window-movement curve.
 hl.animation({ leaf = "workspaces", enabled = true, speed = 2, bezier = "easeOutQuint", style = "slide" })
 
+-- Show the scratchpad with a short vertical slide and fade instead of a full slide up.
+hl.animation({ leaf = "specialWorkspace", enabled = true, speed = 3, bezier = "easeOutQuint", style = "slidefadevert 30%" })
+
 -- Override Omarchy's per-app and default opacity rules with exact values.
 o.window(".*", { opacity = "1.0 override 1.0 override 1.0 override" })
 
