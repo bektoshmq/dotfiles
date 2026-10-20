@@ -18,7 +18,15 @@ o.bind("SUPER + SHIFT + J", "Swap window down", hl.dsp.window.swap({ direction =
 o.bind("SUPER + SHIFT + K", "Swap window up", hl.dsp.window.swap({ direction = "u" }))
 o.bind("SUPER + SHIFT + L", "Swap window to the right", hl.dsp.window.swap({ direction = "r" }))
 
+-- Drop the Google Maps webapp shortcut.
+hl.unbind("SUPER + SHIFT + S") -- Was: Google Maps.
+
 -- Keep Super+Space unused and move the menus to Alt+Space.
 hl.unbind("SUPER + SPACE") -- Was: Omarchy menu.
 o.bind("ALT + SPACE", "Apps menu", "omarchy-menu toggle apps")
 o.bind("ALT + SHIFT + SPACE", "Omarchy menu", "omarchy-menu toggle root")
+
+-- Advantage360 Fn layer: this XKB map exposes its F13/F14 HID events under
+-- the standard evdev multimedia symbols below.
+o.bind("XF86Tools", "Brightness up (Advantage360)", "omarchy brightness display +5%", { locked = true, repeating = true })
+o.bind("XF86Launch5", "Brightness down (Advantage360)", "omarchy brightness display 5%-", { locked = true, repeating = true })
