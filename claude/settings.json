@@ -13,5 +13,7 @@
     }
   },
   "theme": "custom:omarchy",
-  "editorMode": "vim"
+  "editorMode": "vim",
+  "agentPushNotifEnabled": true,
+  "inputNeededNotifEnabled": true
 }
