@@ -1,11 +1,8 @@
-# T3 Code and OpenCode Desktop on Omarchy
+# OpenCode Desktop on Omarchy
 
-This document describes the local installation and automatic-update setup for:
+This document describes the local installation and automatic-update setup for OpenCode Desktop.
 
-- T3 Code
-- OpenCode Desktop
-
-Both applications are installed from their official x86-64 AppImage releases. Because this machine does not have the FUSE 2 compatibility library, the AppImages are verified and extracted into user-local directories. No root access is required for normal launches or updates.
+It is installed from its official x86-64 AppImage release. Because this machine does not have the FUSE 2 compatibility library, the AppImage is verified and extracted into user-local directories. No root access is required for normal launches or updates.
 
 ## Quick commands
 
@@ -33,33 +30,28 @@ Show the timer and its next scheduled run:
 systemctl --user list-timers update-ai-desktops.timer
 ```
 
-Show the installed versions:
+Show the installed version:
 
 ```bash
-basename "$(readlink -f ~/.local/lib/t3-code-current)"
 basename "$(readlink -f ~/.local/lib/opencode-desktop-current)"
 ```
 
 Launch from a terminal:
 
 ```bash
-t3-code
 opencode-desktop
 ```
 
-Both applications are also registered in Walker as **T3 Code (Alpha)** and **OpenCode**.
+It is also registered in Walker as **OpenCode**.
 
 ## Installation layout
 
 | Purpose | Path |
 |---|---|
 | Update script | `~/.local/bin/update-ai-desktops` |
-| T3 Code launcher | `~/.local/bin/t3-code` |
 | OpenCode launcher | `~/.local/bin/opencode-desktop` |
-| T3 active-version link | `~/.local/lib/t3-code-current` |
 | OpenCode active-version link | `~/.local/lib/opencode-desktop-current` |
-| Extracted application versions | `~/.local/lib/t3-code-*` and `~/.local/lib/opencode-desktop-*` |
-| T3 Walker entry | `~/.local/share/applications/t3-code.desktop` |
+| Extracted application versions | `~/.local/lib/opencode-desktop-*` |
 | OpenCode Walker entry | `~/.local/share/applications/ai.opencode.desktop.desktop` |
 | Application icons | `~/.local/share/icons/hicolor/` |
 | systemd service | `~/.config/systemd/user/update-ai-desktops.service` |
@@ -95,7 +87,6 @@ An already-running application continues using its old files. Quit and reopen it
 
 Official release sources:
 
-- T3 Code: <https://github.com/pingdotgg/t3code/releases>
 - OpenCode: <https://github.com/anomalyco/opencode/releases>
 
 ## Timer management
@@ -142,16 +133,10 @@ List the retained versions:
 
 ```bash
 find ~/.local/lib -maxdepth 1 -type d \
-  \( -name 't3-code-*' -o -name 'opencode-desktop-*' \) -print
+  -name 'opencode-desktop-*' -print
 ```
 
 Point the relevant active-version link at the older directory. Replace `VERSION` with the retained version:
-
-```bash
-ln -sfn ~/.local/lib/t3-code-VERSION ~/.local/lib/t3-code-current
-```
-
-or:
 
 ```bash
 ln -sfn ~/.local/lib/opencode-desktop-VERSION ~/.local/lib/opencode-desktop-current
@@ -173,9 +158,7 @@ update-desktop-database ~/.local/share/applications
 Confirm that the desktop entries exist:
 
 ```bash
-desktop-file-validate \
-  ~/.local/share/applications/t3-code.desktop \
-  ~/.local/share/applications/ai.opencode.desktop.desktop
+desktop-file-validate ~/.local/share/applications/ai.opencode.desktop.desktop
 ```
 
 ### An application does not start
@@ -183,9 +166,6 @@ desktop-file-validate \
 Confirm that its active link resolves and `AppRun` is executable:
 
 ```bash
-readlink -f ~/.local/lib/t3-code-current
-test -x ~/.local/lib/t3-code-current/AppRun && echo "T3 runtime OK"
-
 readlink -f ~/.local/lib/opencode-desktop-current
 test -x ~/.local/lib/opencode-desktop-current/AppRun && echo "OpenCode runtime OK"
 ```
@@ -193,7 +173,6 @@ test -x ~/.local/lib/opencode-desktop-current/AppRun && echo "OpenCode runtime O
 Run the launcher from a terminal to see startup errors:
 
 ```bash
-t3-code
 opencode-desktop
 ```
 
@@ -226,7 +205,6 @@ Application data is stored separately from the extracted runtimes, so installing
 
 Known data locations include:
 
-- T3 Code: `~/.t3/`
 - OpenCode: `~/.config/ai.opencode.desktop/`
 - OpenCode shared data: `~/.local/share/ai.opencode.desktop/`
 
