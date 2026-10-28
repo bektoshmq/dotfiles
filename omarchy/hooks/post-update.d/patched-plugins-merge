@@ -1,0 +1,182 @@
+#!/bin/bash
+
+# Keep cloned Omarchy shell plugins (omarchy plugin clone) in step with
+# upstream. For every clone, three-way merge the upstream files it was based on,
+# the upstream files just installed, and the local copy. A clean merge is
+# applied (old copy backed up) and a conflict is left for review, both with a
+# notification, so nothing has to be remembered after `omarchy update`. Also
+# linked into post-boot.d to catch updates made outside `omarchy update`.
+#
+#   patched-plugins-merge              check every clone, merge what's clean
+#   patched-plugins-merge --init       record today's upstream as the baseline
+#   patched-plugins-merge --accept ID  conflicts resolved by hand; take the
+#                                      current upstream as ID's new baseline
+
+set -uo pipefail
+
+plugins_dir="$HOME/.config/omarchy/plugins"
+upstream_root="${OMARCHY_PATH:-/usr/share/omarchy}/shell/plugins"
+state_dir="$HOME/.local/state/omarchy-patched-plugins"
+
+notify() {
+  local urgency=$1 title=$2 body=$3
+  omarchy notification send -u "$urgency" -g 󰏗 "$title" "$body" 2>/dev/null ||
+    notify-send -u "$urgency" "$title" "$body" 2>/dev/null || true
+}
+
+# Print the manifest of the built-in plugin with the given id.
+upstream_manifest() {
+  local id=$1 m
+  while IFS= read -r -d '' m; do
+    [[ $(jq -r '.id // empty' "$m" 2>/dev/null) == "$id" ]] && { echo "$m"; return; }
+  done < <(find "$upstream_root" \( -name manifest.json -o -name '*.manifest.json' \) -print0)
+  return 1
+}
+
+# Print "relpath<TAB>upstream file" for each file a clone takes from upstream.
+# A manifest.json plugin is cloned whole; a widget manifest only brings its
+# entry points and clone paths (see omarchy-plugin-clone).
+upstream_files() {
+  local manifest=$1 dir=${1%/*} f
+  printf 'manifest.json\t%s\n' "$manifest"
+  if [[ ${manifest##*/} == manifest.json ]]; then
+    while IFS= read -r -d '' f; do
+      [[ ${f#"$dir"/} == manifest.json ]] || printf '%s\t%s\n' "${f#"$dir"/}" "$f"
+    done < <(find "$dir" -type f -print0)
+  else
+    jq -r '(.entryPoints[]?), (.omarchy.clonePaths[]?.source)' "$manifest" |
+      while IFS= read -r f; do
+        if [[ -d $dir/$f ]]; then
+          find "$dir/$f" -type f | while IFS= read -r g; do printf '%s\t%s\n' "${g#"$dir"/}" "$g"; done
+        elif [[ -f $dir/$f ]]; then
+          printf '%s\t%s\n' "$f" "$dir/$f"
+        fi
+      done
+  fi
+}
+
+record_baseline() {
+  local clone_id=$1 manifest=$2 base="$state_dir/$1/base" rel src
+  rm -rf "$base" && mkdir -p "$base"
+  while IFS=$'\t' read -r rel src; do
+    mkdir -p "$base/$(dirname "$rel")" && cp "$src" "$base/$rel"
+  done < <(upstream_files "$manifest")
+}
+
+# Merge one clone. Prints a summary line; returns 0 unchanged, 1 merged, 2 conflict.
+merge_clone() {
+  local clone=$1 clone_id=${1##*/} manifest=$2
+  local base="$state_dir/$clone_id/base" stage report rel src status=0
+  local -a merged=() conflicts=() added=() removed=()
+
+  stage=$(mktemp -d) || return 2
+  cp -a "$clone/." "$stage/"
+
+  declare -A seen=()
+  while IFS=$'\t' read -r rel src; do
+    seen[$rel]=1
+    if [[ -f $base/$rel ]] && cmp -s "$base/$rel" "$src"; then continue; fi
+    if [[ ! -f $stage/$rel ]]; then
+      mkdir -p "$stage/$(dirname "$rel")" && cp "$src" "$stage/$rel"
+      added+=("$rel")
+      continue
+    fi
+    local b=/dev/null; [[ -f $base/$rel ]] && b="$base/$rel"
+    if git merge-file -L mine -L "upstream before" -L "upstream now" "$stage/$rel" "$b" "$src" >/dev/null 2>&1; then
+      merged+=("$rel")
+    else
+      conflicts+=("$rel")
+    fi
+  done < <(upstream_files "$manifest")
+
+  for rel in $(cd "$base" && find . -type f | sed 's|^\./||'); do
+    [[ -n ${seen[$rel]:-} ]] || removed+=("$rel")
+  done
+
+  if (( ${#merged[@]} + ${#added[@]} + ${#conflicts[@]} + ${#removed[@]} == 0 )); then
+    rm -rf "$stage"
+    return 0
+  fi
+
+  if (( ${#conflicts[@]} + ${#removed[@]} > 0 )); then
+    report="$state_dir/$clone_id/conflicts"
+    rm -rf "$report" && mv "$stage" "$report"
+    {
+      echo "# $clone_id: upstream ($(jq -r .omarchy.clonedFrom "$clone/manifest.json")) changed"
+      echo
+      echo "Nothing was changed in $clone."
+      echo "This folder holds the merged copy; files with conflicts carry <<<<<<< markers."
+      echo
+      for rel in "${conflicts[@]}"; do echo "- conflict: $rel"; done
+      for rel in "${removed[@]}"; do echo "- removed upstream: $rel"; done
+      for rel in "${merged[@]}"; do echo "- merged cleanly: $rel"; done
+      for rel in "${added[@]}"; do echo "- new upstream: $rel"; done
+      echo
+      echo "Upstream before: $base"
+      echo "Upstream now:    ${manifest%/*}"
+      echo
+      echo "When resolved and copied into $clone, run:"
+      echo "  patched-plugins-merge --accept $clone_id"
+    } >"$report/REPORT.md"
+    echo "$clone_id: needs review, see $report/REPORT.md"
+    return 2
+  fi
+
+  mkdir -p "$state_dir/$clone_id/backups"
+  cp -a "$clone" "$state_dir/$clone_id/backups/$(date +%Y%m%d-%H%M%S)"
+  cp -a "$stage/." "$clone/"
+  rm -rf "$stage" "$state_dir/$clone_id/conflicts"
+  record_baseline "$clone_id" "$manifest"
+  echo "$clone_id: merged ${merged[*]} ${added[*]}"
+  return 1
+}
+
+clones() {
+  local m
+  for m in "$plugins_dir"/*/manifest.json; do
+    [[ -f $m ]] || continue
+    local from; from=$(jq -r '.omarchy.clonedFrom // empty' "$m")
+    [[ -n $from ]] && printf '%s\t%s\n' "${m%/manifest.json}" "$from"
+  done
+}
+
+case ${1:-} in
+  --init|--accept)
+    want=${2:-}
+    while IFS=$'\t' read -r clone from; do
+      [[ -z $want || ${clone##*/} == "$want" ]] || continue
+      manifest=$(upstream_manifest "$from") || { echo "${clone##*/}: $from no longer ships" >&2; continue; }
+      record_baseline "${clone##*/}" "$manifest"
+      rm -rf "$state_dir/${clone##*/}/conflicts"
+      echo "${clone##*/}: baseline is now upstream $from"
+    done < <(clones)
+    exit 0
+    ;;
+esac
+
+applied=() review=()
+while IFS=$'\t' read -r clone from; do
+  clone_id=${clone##*/}
+  if ! manifest=$(upstream_manifest "$from"); then
+    review+=("$clone_id ($from no longer ships)")
+    continue
+  fi
+  if [[ ! -d $state_dir/$clone_id/base ]]; then
+    # No record of what it was cloned from; assume today's upstream.
+    record_baseline "$clone_id" "$manifest"
+    echo "$clone_id: no baseline yet, recorded current upstream"
+    continue
+  fi
+  merge_clone "$clone" "$manifest"
+  case $? in
+    1) applied+=("$clone_id") ;;
+    2) review+=("$clone_id") ;;
+  esac
+done < <(clones)
+
+(( ${#applied[@]} )) &&
+  notify low "Patched plugins updated" "Merged upstream changes into: ${applied[*]}"
+(( ${#review[@]} )) &&
+  notify critical "Patched plugins need a merge" \
+    "Upstream changed: ${review[*]}. Details in $state_dir/${review[0]%% *}/conflicts/REPORT.md"
+exit 0
