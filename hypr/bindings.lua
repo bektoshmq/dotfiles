@@ -30,3 +30,6 @@ o.bind("ALT + SHIFT + SPACE", "Omarchy menu", "omarchy-menu toggle root")
 -- the standard evdev multimedia symbols below.
 o.bind("XF86Tools", "Brightness up (Advantage360)", "omarchy brightness display +5%", { locked = true, repeating = true })
 o.bind("XF86Launch5", "Brightness down (Advantage360)", "omarchy brightness display 5%-", { locked = true, repeating = true })
+
+-- Too easy to hit by accident; it rescales the monitor and rewrites monitors.lua.
+hl.unbind("SUPER + SLASH") -- Was: Monitor scaling up.
